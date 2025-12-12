@@ -1,0 +1,280 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Edel Museum Generator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-12 14:36+0000\n"
+"PO-Revision-Date: 2025-12-12 14:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.0; wp-6.9; php-8.1.23\n"
+"X-Domain: edel-museum-generator"
+
+#: inc/class-admin.php:21 inc/class-admin.php:22
+msgid "Add New Artwork"
+msgstr "新規作品を追加"
+
+#: inc/class-admin.php:36 inc/class-admin.php:37
+msgid "Add New Exhibition"
+msgstr "新規展示室を作成"
+
+#: inc/class-front.php:25
+msgid "Are you sure you want to reset layout?"
+msgstr "本当に配置をリセットしますか？"
+
+#: inc/class-admin.php:20
+msgid "Artwork"
+msgstr "作品"
+
+#: inc/class-admin.php:51
+msgid "Artwork Options"
+msgstr "作品オプション"
+
+#: inc/class-admin.php:217
+msgid "Artwork Placement (Comma separated IDs)"
+msgstr "作品配置 (作品IDをカンマ区切りで入力)"
+
+#: inc/class-admin.php:109
+msgid "Auto-Tour Mode"
+msgstr "オートツアーモード"
+
+#: inc/class-front.php:222
+msgid "Back to Viewer"
+msgstr "閲覧モードに戻る"
+
+#: inc/class-admin.php:204
+msgid "Ceiling"
+msgstr "天井"
+
+#: inc/class-front.php:257
+msgid "Click artwork to edit"
+msgstr "作品をクリックして編集"
+
+#. Description of the plugin
+msgid ""
+"Easily create immersive 3D virtual museums and galleries. Walk through the "
+"space, view artworks, and customize textures."
+msgstr "没入感のある3Dバーチャル美術館やギャラリーを簡単に作成できます。空間を歩き回り、作品を鑑賞し、テクスチャをカスタマイズしましょう。"
+
+#: inc/class-admin.php:228
+msgid "East Wall"
+msgstr "東側の壁"
+
+#. Author of the plugin
+msgid "Edel Hearts"
+msgstr "Edel Hearts"
+
+#. Name of the plugin
+msgid "Edel Museum Generator"
+msgstr "Edel Museum Generator"
+
+#: inc/class-admin.php:23
+msgid "Edit Artwork"
+msgstr "作品を編集"
+
+#: inc/class-admin.php:38
+msgid "Edit Exhibition"
+msgstr "展示室を編集"
+
+#: inc/class-front.php:23
+msgid "Error"
+msgstr "エラー"
+
+#: inc/class-front.php:216
+msgid "Error: Data not found."
+msgstr "エラー: データが見つかりません。"
+
+#: inc/class-front.php:193
+msgid "Error: Please specify Exhibition ID."
+msgstr "エラー: 展示室IDを指定してください。"
+
+#: inc/class-admin.php:35
+msgid "Exhibition"
+msgstr "展示室"
+
+#: inc/class-admin.php:34
+msgid "Exhibition Settings"
+msgstr "展示室設定"
+
+#: inc/class-admin.php:192
+msgid "Floor"
+msgstr "床"
+
+#: inc/class-admin.php:92
+msgid "Get Pro Version"
+msgstr "Pro版を入手"
+
+#. Author URI of the plugin
+msgid "https://edel-hearts.com"
+msgstr "https://edel-hearts.com"
+
+#: inc/class-admin.php:89
+msgid ""
+"In the Pro version, you can set a URL for each artwork to link to your shop "
+"or portfolio."
+msgstr "Pro版では、各作品にURLを設定して、ショップやポートフォリオにリンクさせることができます。"
+
+#: inc/class-admin.php:177
+msgid "Lighting Settings (Default)"
+msgstr "照明設定 (初期値)"
+
+#: inc/class-admin.php:107
+msgid "Link Artworks to URLs"
+msgstr "作品へのURLリンク設定"
+
+#: inc/class-admin.php:86
+msgid "Link feature is available in Pro version."
+msgstr "リンク機能はPro版でのみ利用可能です。"
+
+#: inc/class-admin.php:473 inc/class-admin.php:484
+msgid "Missing data"
+msgstr "データが不足しています"
+
+#: inc/class-admin.php:19
+msgid "Museum Artworks"
+msgstr "ミュージアム作品"
+
+#: inc/class-admin.php:220
+msgid "North Wall"
+msgstr "北側の壁"
+
+#: inc/class-admin.php:212
+msgid "Number of Pillars (0-2)"
+msgstr "柱の本数 (0-2)"
+
+#: inc/class-admin.php:467 inc/class-admin.php:480
+msgid "Permission denied"
+msgstr "権限がありません"
+
+#: inc/class-admin.php:200
+msgid "Pillar"
+msgstr "柱"
+
+#: inc/class-admin.php:248
+msgid "Pillar 1 East"
+msgstr "柱1 東面"
+
+#: inc/class-admin.php:240
+msgid "Pillar 1 North"
+msgstr "柱1 北面"
+
+#: inc/class-admin.php:244
+msgid "Pillar 1 South"
+msgstr "柱1 南面"
+
+#: inc/class-admin.php:252
+msgid "Pillar 1 West"
+msgstr "柱1 西面"
+
+#: inc/class-admin.php:267
+msgid "Pillar 2 East"
+msgstr "柱2 東面"
+
+#: inc/class-admin.php:259
+msgid "Pillar 2 North"
+msgstr "柱2 北面"
+
+#: inc/class-admin.php:263
+msgid "Pillar 2 South"
+msgstr "柱2 南面"
+
+#: inc/class-admin.php:271
+msgid "Pillar 2 West"
+msgstr "柱2 西面"
+
+#: inc/class-admin.php:237
+msgid "Pillar Placement"
+msgstr "柱への配置"
+
+#: inc/class-admin.php:108
+msgid "Place 3D Models (GLB)"
+msgstr "3Dモデル (GLB) の配置"
+
+#: inc/class-admin.php:110
+msgid "Premium Support"
+msgstr "プレミアムサポート"
+
+#: inc/class-front.php:24
+msgid "Reset"
+msgstr "リセット"
+
+#: inc/class-front.php:265
+msgid "Reset Layout"
+msgstr "配置リセット"
+
+#: inc/class-admin.php:487
+msgid "Reset to default layout."
+msgstr "初期配置に戻しました。"
+
+#: inc/class-admin.php:180
+msgid "Room Brightness"
+msgstr "部屋の明るさ"
+
+#: inc/class-admin.php:61
+msgid "Room Settings & Artwork Placement"
+msgstr "ルーム設定 & 作品配置"
+
+#: inc/class-front.php:266
+msgid "Save Layout"
+msgstr "レイアウトを保存"
+
+#: inc/class-admin.php:476
+msgid "Saved successfully!"
+msgstr "保存しました！"
+
+#: inc/class-front.php:22
+msgid "Saved!"
+msgstr "保存しました！"
+
+#: inc/class-front.php:259
+msgid "Scale:"
+msgstr "サイズ:"
+
+#: inc/class-admin.php:224
+msgid "South Wall"
+msgstr "南側の壁"
+
+#: inc/class-admin.php:184
+msgid "Spotlight Brightness"
+msgstr "スポットライトの明るさ"
+
+#: inc/class-admin.php:209
+msgid "Structure"
+msgstr "構造"
+
+#: inc/class-front.php:222
+msgid "Switch to Editor"
+msgstr "編集モードに切り替え"
+
+#: inc/class-admin.php:189
+msgid "Textures (Image URL)"
+msgstr "テクスチャ (画像URL)"
+
+#: inc/class-admin.php:105
+msgid "Unlock powerful features:"
+msgstr "強力な機能をアンロック:"
+
+#: inc/class-admin.php:113
+msgid "Upgrade Now"
+msgstr "今すぐアップグレード"
+
+#: inc/class-admin.php:71
+msgid "Upgrade to Pro"
+msgstr "Pro版へアップグレード"
+
+#: inc/class-front.php:248
+msgid "View Details"
+msgstr "詳細を見る"
+
+#: inc/class-admin.php:196
+msgid "Wall"
+msgstr "壁"
+
+#: inc/class-admin.php:232
+msgid "West Wall"
+msgstr "西側の壁"
