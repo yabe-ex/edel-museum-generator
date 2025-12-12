@@ -3,7 +3,31 @@ jQuery(document).ready(function ($) {
     if (!container) return;
 
     var $container = $(container);
-    var layout = $container.data('layout');
+
+    // --- データ取得ロジック (Pro版と同じ安全な方式) ---
+    var jsonId = $container.attr('data-json-id');
+    var layout = null;
+
+    if (jsonId) {
+        var inputElement = document.getElementById(jsonId);
+        if (inputElement && inputElement.value) {
+            try {
+                layout = JSON.parse(decodeURIComponent(inputElement.value));
+            } catch (e) {
+                console.error('Edel Editor: JSON Parse Error', e);
+            }
+        }
+    }
+
+    if (!layout) {
+        layout = $container.data('layout');
+    }
+
+    if (!layout || !layout.room) {
+        return;
+    }
+    // ----------------------------------
+
     var postId = $container.data('post-id');
     var canvas = $container.find('.ai-museum-canvas')[0];
 
@@ -16,7 +40,7 @@ jQuery(document).ready(function ($) {
     var width = $container.width();
     var height = 500;
 
-    // --- ★追加: 保存完了通知用のUI ---
+    // Notification UI
     var $notification = $('<div>')
         .css({
             position: 'absolute',
@@ -31,14 +55,13 @@ jQuery(document).ready(function ($) {
             display: 'none',
             fontSize: '16px',
             fontWeight: 'bold',
-            pointerEvents: 'none' // クリックを透過させる
+            pointerEvents: 'none'
         })
         .appendTo($container);
 
     function showNotification(message) {
         $notification.text(message).stop(true, true).fadeIn(300).delay(1500).fadeOut(500);
     }
-    // ----------------------------------
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x333333);
@@ -318,7 +341,6 @@ jQuery(document).ready(function ($) {
             success: function (res) {
                 $saveBtn.prop('disabled', false).text(originalText);
                 if (res.success) {
-                    // ★修正: ポップアップ通知を表示
                     showNotification(edel_vars.txt_saved);
                 } else {
                     alert(edel_vars.txt_error);

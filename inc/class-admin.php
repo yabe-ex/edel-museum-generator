@@ -45,17 +45,15 @@ class EdelMuseumGeneratorAdmin {
     }
 
     public function add_meta_boxes() {
-        // 作品用 (Lite版制限表示)
         add_meta_box(
             'edel_art_meta',
             __('Artwork Options', 'edel-museum-generator'),
-            array($this, 'render_art_meta'), // Lite用に変更済み
+            array($this, 'render_art_meta'),
             'edel_artwork',
             'normal',
             'high'
         );
 
-        // 展示室設定 (メイン)
         add_meta_box(
             'edel_room_meta',
             __('Room Settings & Artwork Placement', 'edel-museum-generator'),
@@ -65,7 +63,7 @@ class EdelMuseumGeneratorAdmin {
             'high'
         );
 
-        // ★追加: Pro版への導線サイドバー
+        // Pro版への導線サイドバー
         add_meta_box(
             'edel_pro_sidebar',
             __('Upgrade to Pro', 'edel-museum-generator'),
@@ -76,9 +74,6 @@ class EdelMuseumGeneratorAdmin {
         );
     }
 
-    /**
-     * 作品用メタボックス (Lite版仕様: リンク入力不可・Pro誘導)
-     */
     public function render_art_meta($post) {
 ?>
         <div style="background: #f0f6fc; padding: 15px; border-left: 4px solid #72aee6;">
@@ -95,9 +90,6 @@ class EdelMuseumGeneratorAdmin {
     <?php
     }
 
-    /**
-     * ★追加: 展示室設定画面のサイドバー (Pro誘導)
-     */
     public function render_pro_sidebar() {
     ?>
         <div style="text-align: center;">
@@ -280,9 +272,8 @@ class EdelMuseumGeneratorAdmin {
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
         if (!current_user_can('edit_post', $post_id)) return;
 
-        // ★Lite版のため、作品リンク(_edel_art_link)の保存処理は削除しました
+        // Lite版なのでリンク保存処理は無し
 
-        // 展示室の設定保存
         if (isset($_POST['edel_room'])) {
             $clean_data = array();
             foreach ($_POST['edel_room'] as $k => $v) {
@@ -290,10 +281,8 @@ class EdelMuseumGeneratorAdmin {
             }
             update_post_meta($post_id, '_edel_exhibition_data', $clean_data);
 
-            // レイアウトのマージ処理 (座標維持)
             $old_json = get_post_meta($post_id, '_edel_museum_layout', true);
             $old_layout = $old_json ? json_decode($old_json, true) : null;
-
             $new_layout = $this->generate_layout_data($post_id, $clean_data);
 
             if ($old_layout && isset($old_layout['artworks']) && isset($new_layout['artworks'])) {
@@ -302,7 +291,6 @@ class EdelMuseumGeneratorAdmin {
                     $key = $art['id'] . '_' . $art['wall'];
                     $old_map[$key] = $art;
                 }
-
                 foreach ($new_layout['artworks'] as &$new_art) {
                     $key = $new_art['id'] . '_' . $new_art['wall'];
                     if (isset($old_map[$key])) {
@@ -310,14 +298,14 @@ class EdelMuseumGeneratorAdmin {
                         $new_art['x'] = $old_art['x'];
                         $new_art['y'] = $old_art['y'];
                         $new_art['z'] = $old_art['z'];
-                        if (isset($old_art['scale'])) {
-                            $new_art['scale'] = $old_art['scale'];
-                        }
+                        if (isset($old_art['scale'])) $new_art['scale'] = $old_art['scale'];
                     }
                 }
             }
 
-            update_post_meta($post_id, '_edel_museum_layout', wp_json_encode($new_layout));
+            // ★重要: 文字化け対策 (wp_slash + UNESCAPED_UNICODE)
+            $json = wp_json_encode($new_layout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            update_post_meta($post_id, '_edel_museum_layout', wp_slash($json));
         }
     }
 
@@ -328,14 +316,12 @@ class EdelMuseumGeneratorAdmin {
         $num_pillars = intval($meta['pillars']);
         $pillars_data = array();
         $pillar_size = 2;
-
         if ($num_pillars === 1) {
             $pillars_data[] = array('id' => 'p1', 'x' => 0, 'z' => 0, 'w' => $pillar_size, 'd' => $pillar_size);
         } elseif ($num_pillars === 2) {
             $pillars_data[] = array('id' => 'p1', 'x' => -3, 'z' => 0, 'w' => $pillar_size, 'd' => $pillar_size);
             $pillars_data[] = array('id' => 'p2', 'x' => 3, 'z' => 0, 'w' => $pillar_size, 'd' => $pillar_size);
         }
-
         $layout = array(
             'room' => array(
                 'width' => $room_w,
@@ -351,7 +337,6 @@ class EdelMuseumGeneratorAdmin {
             'pillars' => $pillars_data,
             'artworks' => array(),
         );
-
         $walls_map = array(
             'north' => $meta['north'],
             'south' => $meta['south'],
@@ -366,12 +351,10 @@ class EdelMuseumGeneratorAdmin {
             'p2_east'  => $meta['p2_east'],
             'p2_west'  => $meta['p2_west'],
         );
-
         foreach ($walls_map as $wall_key => $ids_str) {
             if (empty($ids_str)) continue;
             $ids = array_filter(array_map('trim', explode(',', $ids_str)));
             if (empty($ids)) continue;
-
             $is_pillar = (strpos($wall_key, 'p1_') === 0 || strpos($wall_key, 'p2_') === 0);
             $target_pillar = null;
             if ($is_pillar) {
@@ -384,14 +367,12 @@ class EdelMuseumGeneratorAdmin {
                 }
                 if (!$target_pillar) continue;
             }
-
             if ($is_pillar) {
                 $dir = substr($wall_key, 3);
                 $wall_w = ($dir === 'north' || $dir === 'south') ? $target_pillar['w'] : $target_pillar['d'];
             } else {
                 $wall_w = ($wall_key === 'north' || $wall_key === 'south') ? $room_w : $room_d;
             }
-
             $margin = 0.5;
             $effective_width = $wall_w - ($margin * 2);
             $count = count($ids);
@@ -399,18 +380,15 @@ class EdelMuseumGeneratorAdmin {
             if ($count * $spacing > $effective_width) $spacing = $effective_width / $count;
             $total_span = ($count - 1) * $spacing;
             $start_pos = - ($total_span / 2);
-
             foreach ($ids as $i => $art_id) {
                 $art_post = get_post($art_id);
                 if (!$art_post || $art_post->post_type !== 'edel_artwork') continue;
                 $img_url = get_the_post_thumbnail_url($art_id, 'large');
                 if (!$img_url) continue;
-
                 $offset = $start_pos + ($i * $spacing);
                 $px = 0;
                 $pz = 0;
                 $p_offset = 0.05;
-
                 if (!$is_pillar) {
                     if ($wall_key === 'north') {
                         $px = $offset;
@@ -445,7 +423,6 @@ class EdelMuseumGeneratorAdmin {
                         $px = $cx - $hw - $p_offset;
                     }
                 }
-
                 $layout['artworks'][] = array(
                     'id'    => $art_id,
                     'image' => $img_url,
@@ -472,7 +449,8 @@ class EdelMuseumGeneratorAdmin {
 
         if (!$post_id || !$layout) wp_send_json_error(array('message' => __('Missing data', 'edel-museum-generator')));
 
-        update_post_meta($post_id, '_edel_museum_layout', $layout);
+        // ★重要: AJAX保存時も wp_slash をかける
+        update_post_meta($post_id, '_edel_museum_layout', wp_slash($layout));
         wp_send_json_success(array('message' => __('Saved successfully!', 'edel-museum-generator')));
     }
 

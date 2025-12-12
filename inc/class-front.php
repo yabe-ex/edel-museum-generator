@@ -12,10 +12,8 @@ class EdelMuseumGeneratorFront {
         $is_edit_mode = isset($_GET['museum_edit']) && $_GET['museum_edit'] === '1';
         $version = (defined('EDEL_MUSEUM_GENERATOR_DEVELOP') && true === EDEL_MUSEUM_GENERATOR_DEVELOP) ? time() : EDEL_MUSEUM_GENERATOR_VERSION;
 
-        // Three.js Core
         wp_enqueue_script('three', 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js', array(), '0.128.0', true);
 
-        // Common vars
         $localize_data = array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce'   => wp_create_nonce(EDEL_MUSEUM_GENERATOR_SLUG),
@@ -211,21 +209,41 @@ class EdelMuseumGeneratorFront {
                 $layout['room']['room_brightness'] = isset($meta['room_brightness']) ? $meta['room_brightness'] : '1.2';
                 $layout['room']['spot_brightness'] = isset($meta['spot_brightness']) ? $meta['spot_brightness'] : '1.0';
             }
+
+            // ★重要: 作品情報のリアルタイム更新 (文字化け対策 & 動的更新)
+            if (isset($layout['artworks']) && is_array($layout['artworks'])) {
+                foreach ($layout['artworks'] as &$art) {
+                    if (isset($art['id'])) {
+                        $p = get_post($art['id']);
+                        if ($p) {
+                            $art['title'] = $p->post_title;
+                            $art['desc']  = wp_strip_all_tags($p->post_content);
+                            $art['link']  = get_post_meta($art['id'], '_edel_art_link', true);
+                            $img = get_the_post_thumbnail_url($art['id'], 'large');
+                            if ($img) $art['image'] = $img;
+                        }
+                    }
+                }
+            }
         }
 
         if (!$layout) return '<p>' . __('Error: Data not found.', 'edel-museum-generator') . '</p>';
 
-        $json = wp_json_encode($layout);
+        // ★重要: JSON化 -> URLエンコード (安全な受け渡し)
+        $json_encoded = rawurlencode(wp_json_encode($layout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
         $is_edit_mode = isset($_GET['museum_edit']) && $_GET['museum_edit'] === '1';
         $can_manage = current_user_can('edit_post', $exhibition_id);
         $toggle_url = $is_edit_mode ? remove_query_arg('museum_edit') : add_query_arg('museum_edit', '1');
         $toggle_text = $is_edit_mode ? __('Back to Viewer', 'edel-museum-generator') : __('Switch to Editor', 'edel-museum-generator');
         $toggle_class = $is_edit_mode ? 'button' : 'button button-primary';
 
+        $data_id = 'edel-museum-data-' . $exhibition_id;
+
         ob_start();
 ?>
         <div class="ai-museum-container"
-            data-layout='<?php echo esc_attr($json); ?>'
+            data-json-id="<?php echo esc_attr($data_id); ?>"
             data-post-id="<?php echo esc_attr($exhibition_id); ?>"
             style="width:100%;max-width:900px;margin:0 auto; position:relative; overflow:hidden;">
 
@@ -268,6 +286,8 @@ class EdelMuseumGeneratorFront {
                 </div>
             <?php endif; ?>
         </div>
+
+        <input type="hidden" id="<?php echo esc_attr($data_id); ?>" value="<?php echo $json_encoded; ?>">
 <?php
         return ob_get_clean();
     }

@@ -5,7 +5,32 @@ jQuery(document).ready(function ($) {
 
     function initMuseum(container) {
         var $container = $(container);
-        var layout = $container.data('layout');
+
+        // --- データ取得ロジック (Pro版と同じ安全な方式) ---
+        var jsonId = $container.attr('data-json-id');
+        var layout = null;
+
+        if (jsonId) {
+            var inputElement = document.getElementById(jsonId);
+            if (inputElement && inputElement.value) {
+                try {
+                    layout = JSON.parse(decodeURIComponent(inputElement.value));
+                } catch (e) {
+                    console.error('Edel Museum: JSON Parse Error', e);
+                }
+            }
+        }
+
+        // フォールバック
+        if (!layout) {
+            layout = $container.data('layout');
+        }
+
+        if (!layout || !layout.room) {
+            return;
+        }
+        // ----------------------------------
+
         var canvas = $container.find('.ai-museum-canvas')[0];
 
         // UI
@@ -80,7 +105,7 @@ jQuery(document).ready(function ($) {
             });
         }
 
-        // UI Controls (jQuery)
+        // UI Controls
         var $uiContainer = $('<div>')
             .css({
                 position: 'absolute',
@@ -296,6 +321,7 @@ jQuery(document).ready(function ($) {
         });
     }
 
+    // createRoom, addArtworkPlane, addSpotlight 関数は Pro版/Lite版で共通なので省略せずに記述します
     function createRoom(scene, width, height, depth, style, pillarsData, floorUrl, wallUrl, pillarUrl, ceilingUrl) {
         const styles = { gallery: { wallColor: 0xffffff, bgColor: 0x202020 } };
         const s = styles.gallery;
