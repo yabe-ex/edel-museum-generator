@@ -81,7 +81,6 @@ jQuery(document).ready(function ($) {
         $loadingText.text(edel_vars.txt_loading_assets + ' ' + percent + '%');
     };
     manager.onLoad = function () {
-        console.log('Editor Loading Complete.');
         $loadingScreen.fadeOut(500);
     };
     manager.onError = function (url) {
@@ -93,11 +92,87 @@ jQuery(document).ready(function ($) {
         }
     }, 5000);
 
+    // --- UI Layout & Styling (Theme Conflict Fixes) ---
+    var baseBtnStyle = {
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '6px 14px',
+        fontSize: '13px',
+        fontWeight: '500',
+        lineHeight: 'normal',
+        color: '#2271b1',
+        backgroundColor: '#f6f7f7',
+        border: '1px solid #2271b1',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        textDecoration: 'none',
+        transition: 'all 0.2s',
+        boxSizing: 'border-box',
+        minHeight: '32px',
+        verticalAlign: 'middle',
+        appearance: 'none',
+        boxShadow: 'none',
+        margin: '0',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif'
+    };
+
+    var activeBtnStyle = {
+        color: '#fff',
+        backgroundColor: '#2271b1',
+        borderColor: '#2271b1'
+    };
+
+    var dangerBtnStyle = {
+        color: '#d63638',
+        backgroundColor: '#fff',
+        borderColor: '#d63638'
+    };
+
+    // ★追加: 「閲覧モードに戻る」ボタンのスタイル修正
+    var $switchBtn = $container.find('a.button');
+    if ($switchBtn.length) {
+        $switchBtn.css(
+            $.extend({}, baseBtnStyle, {
+                zIndex: '1001',
+                backgroundColor: '#f6f7f7',
+                color: '#2271b1',
+                width: 'auto',
+                height: 'auto'
+            })
+        );
+        $switchBtn.hover(
+            function () {
+                $(this).css({ backgroundColor: '#f0f0f1', color: '#135e96' });
+            },
+            function () {
+                $(this).css({ backgroundColor: '#f6f7f7', color: '#2271b1' });
+            }
+        );
+    }
+
     var $saveBtn = $container.find('#museum-save');
     var $clearBtn = $container.find('#museum-clear');
     var $scaleSlider = $container.find('#scale-slider');
     var $scaleValue = $container.find('#scale-value');
     var $scaleWrapper = $container.find('#museum-scale-wrapper');
+
+    // コントロールバーのスタイル
+    var $controlsContainer = $saveBtn.parent();
+    $controlsContainer.css({
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '8px',
+        justifyContent: 'flex-end',
+        padding: '10px',
+        background: '#f0f0f1',
+        borderTop: '1px solid #ddd'
+    });
+
+    // ボタンにスタイル適用
+    $saveBtn.css($.extend({}, baseBtnStyle, activeBtnStyle));
+    $clearBtn.css($.extend({}, baseBtnStyle, dangerBtnStyle));
 
     $scaleSlider.attr('min', '0.1');
 
@@ -110,9 +185,9 @@ jQuery(document).ready(function ($) {
         borderRadius: '4px',
         marginLeft: '10px'
     });
-    var $rotateLabel = $('<label>').css({ fontSize: '13px' }).text('Rotate:');
+    var $rotateLabel = $('<label>').css({ fontSize: '13px', color: '#fff' }).text('Rotate:');
     var $rotateSlider = $('<input>').attr({ type: 'range', id: 'rotate-slider', min: '-180', max: '180', step: '15', value: '0' });
-    var $rotateValue = $('<span>').attr('id', 'rotate-value').css({ fontSize: '12px', minWidth: '35px' }).text('0°');
+    var $rotateValue = $('<span>').attr('id', 'rotate-value').css({ fontSize: '12px', minWidth: '35px', color: '#fff' }).text('0°');
     $rotateWrapper.append($rotateLabel).append($rotateSlider).append($rotateValue);
     $scaleWrapper.after($rotateWrapper);
 
@@ -141,27 +216,26 @@ jQuery(document).ready(function ($) {
         $notification.text(message).stop(true, true).fadeIn(300).delay(1500).fadeOut(500);
     }
 
-    var $modeControls = $('<div>').css({ display: 'flex', gap: '5px', marginRight: '15px' });
-    $container.find('#museum-save').parent().prepend($modeControls);
+    var $modeControls = $('<div>').css({ display: 'flex', gap: '8px', marginRight: 'auto' });
+    $controlsContainer.prepend($modeControls);
 
-    var $btnTranslate = $('<button type="button" class="button">' + edel_vars.txt_move_t + '</button>').appendTo($modeControls);
-    var $btnRotate = $('<button type="button" class="button">' + edel_vars.txt_rotate_r + '</button>').appendTo($modeControls);
+    var $btnTranslate = $('<button type="button">' + edel_vars.txt_move_t + '</button>').appendTo($modeControls);
+    var $btnRotate = $('<button type="button">' + edel_vars.txt_rotate_r + '</button>').appendTo($modeControls);
+
+    $btnTranslate.css(baseBtnStyle);
+    $btnRotate.css(baseBtnStyle);
 
     function updateModeButtons(mode) {
-        $btnTranslate.css({
-            background: mode === 'translate' ? '#2271b1' : '#f6f7f7',
-            color: mode === 'translate' ? '#fff' : '#2271b1',
-            borderColor: '#2271b1'
-        });
-        $btnRotate.css({
-            background: mode === 'rotate' ? '#2271b1' : '#f6f7f7',
-            color: mode === 'rotate' ? '#fff' : '#2271b1',
-            borderColor: '#2271b1'
-        });
+        if (mode === 'translate') {
+            $btnTranslate.css(activeBtnStyle);
+            $btnRotate.css($.extend({}, baseBtnStyle, { color: '#2271b1', backgroundColor: '#f6f7f7' }));
+        } else {
+            $btnTranslate.css($.extend({}, baseBtnStyle, { color: '#2271b1', backgroundColor: '#f6f7f7' }));
+            $btnRotate.css(activeBtnStyle);
+        }
     }
 
     const scene = new THREE.Scene();
-    // ★修正: 背景色を明るいグレーに変更 (0xaaaaaa)
     scene.background = new THREE.Color(0xaaaaaa);
 
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
@@ -169,7 +243,6 @@ jQuery(document).ready(function ($) {
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setSize(width, height);
-    // ガンマ補正を有効にして、色をより自然に明るくする
     renderer.outputEncoding = THREE.sRGBEncoding;
 
     const orbit = new THREE.OrbitControls(camera, renderer.domElement);
@@ -235,7 +308,6 @@ jQuery(document).ready(function ($) {
     const reflectionIntensity = parseFloat(room.reflection_intensity) || 0.3;
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.1));
-    // ★修正: 環境光のベース強度を上げて、影になる部分の黒つぶれを防ぐ
     const roomAmbient = new THREE.AmbientLight(0xffffff, 0.75 * roomBright);
     scene.add(roomAmbient);
     const dir1 = new THREE.DirectionalLight(0xffffff, 0.6 * roomBright);
@@ -245,7 +317,6 @@ jQuery(document).ready(function ($) {
     dir2.position.set(-5, 5, -5);
     scene.add(dir2);
 
-    // ★修正: フォグの色を明るくし、濃度を下げる (0x333333 -> 0xaaaaaa, 0.05 -> 0.015)
     scene.fog = new THREE.FogExp2(0xaaaaaa, 0.015);
 
     createRoom(
@@ -318,7 +389,6 @@ jQuery(document).ready(function ($) {
             const material = new THREE.MeshBasicMaterial({ map: null, side: THREE.DoubleSide });
             const plane = new THREE.Mesh(initialGeo, material);
             loader.load(art.image, (texture) => {
-                // テクスチャの色を正しく表示するためのエンコーディング設定
                 texture.encoding = THREE.sRGBEncoding;
                 plane.material.map = texture;
                 plane.material.needsUpdate = true;
@@ -568,7 +638,7 @@ jQuery(document).ready(function ($) {
         reflectionIntensity,
         manager
     ) {
-        const styles = { gallery: { wallColor: 0xffffff, bgColor: 0xaaaaaa } }; // 背景色を明るく
+        const styles = { gallery: { wallColor: 0xffffff, bgColor: 0xaaaaaa } };
         const s = styles.gallery;
         scene.background = new THREE.Color(s.bgColor);
 
@@ -576,11 +646,10 @@ jQuery(document).ready(function ($) {
         if (wallUrl) {
             const loader = new THREE.TextureLoader(manager);
             const wallTex = loader.load(wallUrl);
-            wallTex.encoding = THREE.sRGBEncoding; // エンコーディング指定
+            wallTex.encoding = THREE.sRGBEncoding;
             wallTex.wrapS = THREE.RepeatWrapping;
             wallTex.wrapT = THREE.RepeatWrapping;
             wallTex.repeat.set(width / 4, height / 4);
-            // ★修正: color: 0xffffffを明示
             wallMaterial = new THREE.MeshStandardMaterial({ map: wallTex, color: 0xffffff, side: THREE.BackSide, roughness: 0.8 });
         } else {
             wallMaterial = new THREE.MeshStandardMaterial({ color: s.wallColor, side: THREE.BackSide, roughness: 0.9 });
@@ -590,7 +659,7 @@ jQuery(document).ready(function ($) {
 
         const floorGeo = new THREE.PlaneGeometry(width, depth);
         if (useReflection && typeof THREE.Reflector !== 'undefined') {
-            const reflector = new THREE.Reflector(floorGeo, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x666666 }); // 反射面の色も少し明るく
+            const reflector = new THREE.Reflector(floorGeo, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x666666 });
             reflector.rotation.x = -Math.PI / 2;
             reflector.position.y = -height / 2 - 0.1;
             scene.add(reflector);
@@ -626,7 +695,6 @@ jQuery(document).ready(function ($) {
                 floorTex.wrapS = THREE.RepeatWrapping;
                 floorTex.wrapT = THREE.RepeatWrapping;
                 floorTex.repeat.set(width / 2, depth / 2);
-                // ★修正: color: 0xffffffを明示
                 floorMaterial = new THREE.MeshStandardMaterial({ map: floorTex, color: 0xffffff, roughness: 0.8, metalness: 0.1 });
             } else {
                 floorMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.8, metalness: 0.1 });
@@ -645,7 +713,6 @@ jQuery(document).ready(function ($) {
             ceilTex.wrapS = THREE.RepeatWrapping;
             ceilTex.wrapT = THREE.RepeatWrapping;
             ceilTex.repeat.set(width / 2, depth / 2);
-            // ★修正: color: 0xffffffを明示
             ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilTex, color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });
         } else {
             ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });

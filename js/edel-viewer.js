@@ -85,7 +85,78 @@ jQuery(document).ready(function ($) {
             if ($loadingScreen.is(':visible')) $loadingScreen.fadeOut(500);
         }, 5000);
 
-        // UI
+        // === ★重要: 強制スタイル適用関数 (!important 付き) ===
+        function setImportantStyles(element, styles) {
+            if (!element) return;
+            var domEl = element.jquery ? element[0] : element;
+            if (!domEl || !domEl.style) return;
+
+            for (var prop in styles) {
+                domEl.style.setProperty(prop, styles[prop], 'important');
+            }
+        }
+
+        // ベースとなるボタンスタイル定義
+        var baseBtnStyle = {
+            display: 'inline-flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            padding: '6px 14px',
+            'font-size': '13px',
+            'font-weight': '500',
+            'line-height': 'normal',
+            color: '#2271b1',
+            'background-color': '#f6f7f7',
+            border: '1px solid #2271b1',
+            'border-radius': '4px',
+            cursor: 'pointer',
+            'text-decoration': 'none',
+            transition: 'all 0.2s',
+            'box-sizing': 'border-box',
+            'min-height': '32px',
+            'vertical-align': 'middle',
+            appearance: 'none',
+            'box-shadow': 'none',
+            margin: '0',
+            'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            width: 'auto',
+            height: 'auto',
+            'z-index': '1001'
+        };
+
+        // --- ★修正: テキスト内容でボタンを探す ---
+        // クラス名が消えている可能性を考慮し、「編集」や「Edit」という文字を含むリンクを探す
+        var $switchBtn = $container.find('a').filter(function () {
+            var text = $(this).text().trim();
+            // 日本語の「編集」または英語の「Edit」が含まれているか、もしくは .button クラスを持っているか
+            return text.indexOf('編集') !== -1 || text.indexOf('Edit') !== -1 || $(this).hasClass('button');
+        });
+
+        if ($switchBtn.length) {
+            $switchBtn.each(function () {
+                // スタイルを強制適用
+                setImportantStyles(this, baseBtnStyle);
+
+                // Lite版Viewer: 背景白っぽく、文字青
+                setImportantStyles(this, {
+                    'background-color': '#f6f7f7',
+                    color: '#2271b1'
+                });
+
+                // ホバーイベント
+                $(this)
+                    .on('mouseenter', function () {
+                        this.style.setProperty('background-color', '#f0f0f1', 'important');
+                        this.style.setProperty('color', '#135e96', 'important');
+                    })
+                    .on('mouseleave', function () {
+                        this.style.setProperty('background-color', '#f6f7f7', 'important');
+                        this.style.setProperty('color', '#2271b1', 'important');
+                    });
+            });
+        }
+
+        // UI Elements
         var $crosshair = $container.find('#ai-crosshair');
         var $modalOverlay = $container.find('#ai-modal-overlay');
         var $modalClose = $container.find('#ai-modal-close');
@@ -126,14 +197,12 @@ jQuery(document).ready(function ($) {
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
         renderer.setSize(width, height);
         renderer.shadowMap.enabled = true;
-        // ★修正: ガンマ補正を有効化
         renderer.outputEncoding = THREE.sRGBEncoding;
 
         const baseAmbient = new THREE.AmbientLight(0xffffff, 0.1);
         scene.add(baseAmbient);
 
         const roomLights = [];
-        // ★修正: 環境光の比率を上げ(0.75)、影を明るくする
         const roomAmbient = new THREE.AmbientLight(0xffffff, 0.75);
         roomAmbient.userData.baseIntensity = 0.75;
         scene.add(roomAmbient);
@@ -154,7 +223,6 @@ jQuery(document).ready(function ($) {
 
         const artLights = [];
 
-        // ★修正: フォグの色を明るくし、濃度を下げる
         scene.fog = new THREE.FogExp2(0xaaaaaa, 0.015);
 
         createRoom(
@@ -546,9 +614,10 @@ jQuery(document).ready(function ($) {
             const hits = raycaster.intersectObjects(interactableObjects, true);
             if (hits.length > 0) {
                 let target = hits[0].object;
-                while (target && !target.userData.title && target.parent) {
+                while (target.parent && !target.userData.title && target.parent !== scene) {
                     target = target.parent;
                 }
+
                 if (target && target.userData.title) {
                     hoveredObj = target;
                     if (!isTouchDevice()) $crosshair.addClass('hover');
@@ -599,7 +668,6 @@ jQuery(document).ready(function ($) {
             wallTex.wrapS = THREE.RepeatWrapping;
             wallTex.wrapT = THREE.RepeatWrapping;
             wallTex.repeat.set(width / 4, height / 4);
-            // ★修正: color: 0xffffffを明示
             wallMaterial = new THREE.MeshStandardMaterial({ map: wallTex, color: 0xffffff, side: THREE.BackSide, roughness: 0.8 });
         } else {
             wallMaterial = new THREE.MeshStandardMaterial({ color: s.wallColor, side: THREE.BackSide, roughness: 0.9 });
@@ -645,7 +713,6 @@ jQuery(document).ready(function ($) {
                 floorTex.wrapS = THREE.RepeatWrapping;
                 floorTex.wrapT = THREE.RepeatWrapping;
                 floorTex.repeat.set(width / 2, depth / 2);
-                // ★修正: color: 0xffffffを明示
                 floorMaterial = new THREE.MeshStandardMaterial({ map: floorTex, color: 0xffffff, roughness: 0.8, metalness: 0.1 });
             } else {
                 floorMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.8, metalness: 0.1 });
@@ -664,7 +731,6 @@ jQuery(document).ready(function ($) {
             ceilTex.wrapS = THREE.RepeatWrapping;
             ceilTex.wrapT = THREE.RepeatWrapping;
             ceilTex.repeat.set(width / 2, depth / 2);
-            // ★修正: color: 0xffffffを明示
             ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilTex, color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });
         } else {
             ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });
@@ -674,6 +740,29 @@ jQuery(document).ready(function ($) {
         ceilingMesh.rotation.x = Math.PI / 2;
         ceilingMesh.position.y = height / 2 - 0.01;
         scene.add(ceilingMesh);
+
+        if (Array.isArray(pillarsData)) {
+            let pillarMat;
+            if (pillarUrl) {
+                const loader = new THREE.TextureLoader(manager);
+                const pTex = loader.load(pillarUrl);
+                pTex.encoding = THREE.sRGBEncoding;
+                pTex.wrapS = THREE.RepeatWrapping;
+                pTex.wrapT = THREE.RepeatWrapping;
+                pTex.repeat.set(1, height / 2);
+                pillarMat = new THREE.MeshStandardMaterial({ map: pTex, color: 0xffffff, roughness: 0.8 });
+            } else {
+                pillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            }
+            pillarsData.forEach((p) => {
+                const pW = p.w || 2;
+                const pD = p.d || 2;
+                const pGeo = new THREE.BoxGeometry(pW, height, pD);
+                const pMesh = new THREE.Mesh(pGeo, pillarMat);
+                pMesh.position.set(p.x, 0, p.z);
+                scene.add(pMesh);
+            });
+        }
     }
 
     function addArtworkPlane(scene, art, roomW, roomH, roomD, artLights, initialBrightness, interactableObjects, manager) {
@@ -700,10 +789,37 @@ jQuery(document).ready(function ($) {
         if (isPillar) direction = wall.split('_')[1];
 
         let rotY = 0;
-        if (wall === 'north') rotY = 0;
-        if (wall === 'south') rotY = Math.PI;
-        if (wall === 'east') rotY = -Math.PI / 2;
-        if (wall === 'west') rotY = Math.PI / 2;
+        if (isPillar) {
+            switch (direction) {
+                case 'north':
+                    rotY = Math.PI;
+                    break;
+                case 'south':
+                    rotY = 0;
+                    break;
+                case 'east':
+                    rotY = Math.PI / 2;
+                    break;
+                case 'west':
+                    rotY = -Math.PI / 2;
+                    break;
+            }
+        } else {
+            switch (direction) {
+                case 'north':
+                    rotY = 0;
+                    break;
+                case 'south':
+                    rotY = Math.PI;
+                    break;
+                case 'east':
+                    rotY = -Math.PI / 2;
+                    break;
+                case 'west':
+                    rotY = Math.PI / 2;
+                    break;
+            }
+        }
 
         if (art.rotationY !== undefined) {
             rotY = parseFloat(art.rotationY);
@@ -712,7 +828,6 @@ jQuery(document).ready(function ($) {
         if (art.image) {
             const loader = new THREE.TextureLoader(manager);
             loader.load(art.image, (texture) => {
-                // ★修正: ガンマ補正を有効化
                 texture.encoding = THREE.sRGBEncoding;
                 const img = texture.image;
                 const aspect = img && img.width && img.height ? img.width / img.height : 1.5;
@@ -732,7 +847,10 @@ jQuery(document).ready(function ($) {
 
                 scene.add(mesh);
                 mesh.userData = { title: art.title, desc: art.desc, link: art.link, image: art.image };
+
+                // Lite版でもinteractableObjectsに追加してRaycaster対象にする
                 if (interactableObjects) interactableObjects.push(mesh);
+
                 addSpotlight(scene, mesh, direction, isPillar, artLights, initialBrightness);
             });
         }

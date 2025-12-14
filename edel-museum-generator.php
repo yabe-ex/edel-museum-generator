@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Edel Museum Generator
  * Description: Create a 3D virtual museum easily.
- * Version: 1.2.0
+ * Version: 1.3.2
  * Author: Edel Hearts
  * Author URI: https://edel-hearts.com
  * Text Domain: edel-museum-generator
