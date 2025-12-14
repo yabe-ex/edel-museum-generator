@@ -16,16 +16,32 @@ class EdelMuseumGeneratorFront {
         wp_enqueue_script('three-gltf-loader', 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js', array('three'), '0.128.0', true);
         wp_enqueue_script('nipplejs', 'https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipple.min.js', array(), '0.10.1', true);
 
-        // ★修正: Lite版のNonceとAction名
+        // ★修正: JS用翻訳テキストを追加
         $localize_data = array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('edel-museum-generator'),
+            'nonce'   => wp_create_nonce(EDEL_MUSEUM_GENERATOR_SLUG),
             'action_save'  => 'edel_museum_save_layout',
             'action_clear' => 'edel_museum_clear_layout',
             'txt_saved' => __('Saved!', 'edel-museum-generator'),
             'txt_error' => __('Error', 'edel-museum-generator'),
             'txt_reset' => __('Reset', 'edel-museum-generator'),
-            'txt_confirm_reset' => __('Are you sure you want to reset layout?', 'edel-museum-generator')
+            'txt_confirm_reset' => __('Are you sure you want to reset layout?', 'edel-museum-generator'),
+            // Editor Labels
+            'txt_move_t'   => __('Move (T)', 'edel-museum-generator'),
+            'txt_rotate_r' => __('Rotate (R)', 'edel-museum-generator'),
+            'txt_loading_assets' => __('Loading Assets...', 'edel-museum-generator'),
+            // Viewer Controls
+            'txt_controls_title' => __('Controls', 'edel-museum-generator'),
+            'txt_move'   => __('Move:', 'edel-museum-generator'),
+            'txt_height' => __('Height:', 'edel-museum-generator'),
+            'txt_look'   => __('Look:', 'edel-museum-generator'),
+            'txt_cursor' => __('Cursor:', 'edel-museum-generator'),
+            'txt_esc_desc' => __('ESC (Back / Unlock)', 'edel-museum-generator'),
+            // Viewer Settings
+            'txt_room'      => __('Room', 'edel-museum-generator'),
+            'txt_spotlight' => __('Spotlight', 'edel-museum-generator'),
+            'txt_view_details' => __('View Details', 'edel-museum-generator'), // Lite版では未使用ですが統一のため保持
+            'txt_loading' => __('Loading...', 'edel-museum-generator')
         );
 
         if ($is_edit_mode) {
@@ -153,7 +169,7 @@ class EdelMuseumGeneratorFront {
             if (isset($layout['room'])) {
                 $layout['room']['floor_image']   = isset($meta['floor_img']) ? $meta['floor_img'] : '';
                 $layout['room']['wall_image']    = isset($meta['wall_img']) ? $meta['wall_img'] : '';
-                $layout['room']['pillar_image']  = ''; // Lite: 柱画像なし
+                $layout['room']['pillar_image']  = '';
                 $layout['room']['ceiling_image'] = isset($meta['ceiling_img']) ? $meta['ceiling_img'] : '';
                 $layout['room']['room_brightness'] = isset($meta['room_brightness']) ? $meta['room_brightness'] : '1.2';
                 $layout['room']['spot_brightness'] = isset($meta['spot_brightness']) ? $meta['spot_brightness'] : '1.0';
@@ -167,10 +183,10 @@ class EdelMuseumGeneratorFront {
                         if ($p) {
                             $art['title'] = $p->post_title;
                             $art['desc']  = wp_strip_all_tags($p->post_content);
-                            $art['link']  = ''; // Lite: リンクなし
+                            $art['link']  = '';
                             $img = get_the_post_thumbnail_url($art['id'], 'large');
                             if ($img) $art['image'] = $img;
-                            $art['glb'] = ''; // Lite: GLBなし
+                            $art['glb'] = '';
                         }
                     }
                 }

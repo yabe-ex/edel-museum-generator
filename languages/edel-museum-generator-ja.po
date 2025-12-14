@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: Edel Museum Generator\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-12 14:36+0000\n"
-"PO-Revision-Date: 2025-12-12 14:54+0000\n"
+"PO-Revision-Date: 2025-12-14 03:50+0000\n"
 "Last-Translator: \n"
-"Language-Team: Japanese\n"
+"Language-Team: 日本語\n"
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
@@ -15,53 +15,85 @@ msgstr ""
 "X-Loco-Version: 2.8.0; wp-6.9; php-8.1.23\n"
 "X-Domain: edel-museum-generator"
 
-#: inc/class-admin.php:21 inc/class-admin.php:22
+#: inc/class-admin.php:200 inc/class-admin.php:201
 msgid "Add New Artwork"
 msgstr "新規作品を追加"
 
-#: inc/class-admin.php:36 inc/class-admin.php:37
+#: inc/class-admin.php:214 inc/class-admin.php:215
 msgid "Add New Exhibition"
 msgstr "新規展示室を作成"
 
-#: inc/class-front.php:25
+#: inc/class-admin.php:78
+msgid "Adjust Brightness and <strong>Movement Speed</strong>."
+msgstr "明るさと<strong>移動速度</strong>を調整します。"
+
+#: inc/class-admin.php:85
+msgid "Adjust the layout in 3D space."
+msgstr "3D空間でレイアウトを調整します。"
+
+#: inc/class-front.php:28
 msgid "Are you sure you want to reset layout?"
 msgstr "本当に配置をリセットしますか？"
 
-#: inc/class-admin.php:20
+#: inc/class-admin.php:199
 msgid "Artwork"
 msgstr "作品"
 
-#: inc/class-admin.php:51
-msgid "Artwork Options"
-msgstr "作品オプション"
-
-#: inc/class-admin.php:217
-msgid "Artwork Placement (Comma separated IDs)"
-msgstr "作品配置 (作品IDをカンマ区切りで入力)"
-
-#: inc/class-admin.php:109
-msgid "Auto-Tour Mode"
-msgstr "オートツアーモード"
-
-#: inc/class-front.php:222
+#: inc/class-front.php:203
 msgid "Back to Viewer"
 msgstr "閲覧モードに戻る"
 
-#: inc/class-admin.php:204
+#: inc/class-admin.php:418
 msgid "Ceiling"
 msgstr "天井"
 
-#: inc/class-front.php:257
-msgid "Click artwork to edit"
-msgstr "作品をクリックして編集"
+#: inc/class-admin.php:94
+msgid "Click <strong>\"Save Layout\"</strong>."
+msgstr "<strong>「レイアウトを保存」</strong>をクリックします。"
+
+#: inc/class-admin.php:91
+msgid "Click <strong>\"Switch to Editor\"</strong>."
+msgstr "<strong>「Editorに切り替え」</strong>をクリックします。"
+
+#: inc/class-admin.php:92
+msgid "Click an artwork and use the arrows to move it."
+msgstr "作品をクリックし、矢印を使って移動させます。"
+
+#: inc/class-admin.php:76
+msgid ""
+"Click the <strong>\"Select\"</strong> button next to each wall (North, South,"
+" East, West) to choose artworks from your library."
+msgstr "各壁（北、南、東、西）の横にある<strong>「選択」</strong>ボタンをクリックして、ライブラリから作品を選びます。"
+
+#: inc/class-admin.php:456
+msgid "Close"
+msgstr "閉じる"
+
+#: inc/class-admin.php:71
+msgid "Configure the room and place your artworks on the walls."
+msgstr "部屋を設定し、壁に作品を配置します。"
+
+#: inc/class-front.php:34
+msgid "Controls"
+msgstr "操作方法"
+
+#: inc/class-admin.php:147 inc/class-admin.php:183
+msgid "Copied!"
+msgstr "コピーしました。"
+
+#: inc/class-admin.php:145
+msgid "Copy to Clipboard"
+msgstr "クリップボードにコピー"
 
 #. Description of the plugin
-msgid ""
-"Easily create immersive 3D virtual museums and galleries. Walk through the "
-"space, view artworks, and customize textures."
-msgstr "没入感のある3Dバーチャル美術館やギャラリーを簡単に作成できます。空間を歩き回り、作品を鑑賞し、テクスチャをカスタマイズしましょう。"
+msgid "Create a 3D virtual museum easily."
+msgstr "3Dのバーチャル展示室を簡単に作成します。"
 
-#: inc/class-admin.php:228
+#: inc/class-front.php:38
+msgid "Cursor:"
+msgstr "カーソル:"
+
+#: inc/class-admin.php:437
 msgid "East Wall"
 msgstr "東側の壁"
 
@@ -70,211 +102,303 @@ msgid "Edel Hearts"
 msgstr "Edel Hearts"
 
 #. Name of the plugin
+#| msgid "Edel Museum Generator Pro"
 msgid "Edel Museum Generator"
 msgstr "Edel Museum Generator"
 
-#: inc/class-admin.php:23
+#: inc/class-admin.php:42
+#| msgid "Edel Museum Generator Pro - Usage Guide"
+msgid "Edel Museum Generator - Usage Guide"
+msgstr "Edel Museum Generator - ユーザーガイド"
+
+#: inc/class-admin.php:202
 msgid "Edit Artwork"
 msgstr "作品を編集"
 
-#: inc/class-admin.php:38
+#: inc/class-admin.php:216
 msgid "Edit Exhibition"
 msgstr "展示室を編集"
 
-#: inc/class-front.php:23
+#: inc/class-admin.php:60
+msgid "Enter the <strong>Title</strong> and <strong>Description</strong>."
+msgstr "<strong>タイトル</strong>と<strong>説明</strong>を入力します。"
+
+#: inc/class-front.php:26
 msgid "Error"
 msgstr "エラー"
 
-#: inc/class-front.php:216
+#: inc/class-front.php:196
 msgid "Error: Data not found."
 msgstr "エラー: データが見つかりません。"
 
-#: inc/class-front.php:193
+#: inc/class-front.php:156
 msgid "Error: Please specify Exhibition ID."
 msgstr "エラー: 展示室IDを指定してください。"
 
-#: inc/class-admin.php:35
+#: inc/class-front.php:39
+msgid "ESC (Back / Unlock)"
+msgstr "ESC (戻る / 解除)"
+
+#: inc/class-admin.php:213
 msgid "Exhibition"
 msgstr "展示室"
 
-#: inc/class-admin.php:34
+#: inc/class-admin.php:212
 msgid "Exhibition Settings"
 msgstr "展示室設定"
 
-#: inc/class-admin.php:192
+#: inc/class-admin.php:416
 msgid "Floor"
 msgstr "床"
 
-#: inc/class-admin.php:92
-msgid "Get Pro Version"
-msgstr "Pro版を入手"
+#: inc/class-admin.php:47
+msgid "For more detailed instructions and tutorials, please visit:"
+msgstr "より詳細な手順やチュートリアルについては、以下をご覧ください:"
+
+#: inc/class-admin.php:73
+msgid "Go to <strong>Exhibition Settings > Add New Exhibition</strong>."
+msgstr "<strong>Exhibition Settings > Add New Exhibition</strong> に移動します。"
+
+#: inc/class-admin.php:59
+msgid "Go to <strong>Museum Artworks > Add New Artwork</strong>."
+msgstr "<strong>Museum Artworks > Add New Artwork</strong> に移動します。"
+
+#: inc/class-front.php:36
+msgid "Height:"
+msgstr "高さ:"
 
 #. Author URI of the plugin
 msgid "https://edel-hearts.com"
 msgstr "https://edel-hearts.com"
 
-#: inc/class-admin.php:89
-msgid ""
-"In the Pro version, you can set a URL for each artwork to link to your shop "
-"or portfolio."
-msgstr "Pro版では、各作品にURLを設定して、ショップやポートフォリオにリンクさせることができます。"
+#: inc/class-admin.php:393
+msgid "Lighting & Movement"
+msgstr "照明と移動設定"
 
-#: inc/class-admin.php:177
-msgid "Lighting Settings (Default)"
-msgstr "照明設定 (初期値)"
+#: inc/class-front.php:32
+msgid "Loading Assets..."
+msgstr "アセットを読み込み中..."
 
-#: inc/class-admin.php:107
-msgid "Link Artworks to URLs"
-msgstr "作品へのURLリンク設定"
+#: inc/class-front.php:44
+msgid "Loading..."
+msgstr "読み込み中..."
 
-#: inc/class-admin.php:86
-msgid "Link feature is available in Pro version."
-msgstr "リンク機能はPro版でのみ利用可能です。"
+#: inc/class-front.php:37
+msgid "Look:"
+msgstr "視点:"
 
-#: inc/class-admin.php:473 inc/class-admin.php:484
+#: inc/class-admin.php:710 inc/class-admin.php:721
 msgid "Missing data"
 msgstr "データが不足しています"
 
-#: inc/class-admin.php:19
+#: inc/class-front.php:30
+msgid "Move (T)"
+msgstr "移動 (T)"
+
+#: inc/class-front.php:35
+msgid "Move:"
+msgstr "移動:"
+
+#: inc/class-admin.php:404
+msgid "Movement Speed"
+msgstr "移動速度"
+
+#: inc/class-admin.php:198
 msgid "Museum Artworks"
 msgstr "ミュージアム作品"
 
-#: inc/class-admin.php:220
+#: inc/class-admin.php:472
+msgid "No artworks found."
+msgstr "作品が見つかりませんでした。"
+
+#: inc/class-admin.php:437
 msgid "North Wall"
 msgstr "北側の壁"
 
-#: inc/class-admin.php:212
-msgid "Number of Pillars (0-2)"
-msgstr "柱の本数 (0-2)"
-
-#: inc/class-admin.php:467 inc/class-admin.php:480
+#: inc/class-admin.php:702 inc/class-admin.php:717
 msgid "Permission denied"
 msgstr "権限がありません"
 
-#: inc/class-admin.php:200
-msgid "Pillar"
-msgstr "柱"
+#: inc/class-admin.php:75
+msgid "Placement:"
+msgstr "配置:"
 
-#: inc/class-admin.php:248
-msgid "Pillar 1 East"
-msgstr "柱1 東面"
+#: inc/class-admin.php:57
+msgid "Register the 2D artworks (paintings/photos) you want to display."
+msgstr "展示したい2D作品（絵画/写真）を登録します。"
 
-#: inc/class-admin.php:240
-msgid "Pillar 1 North"
-msgstr "柱1 北面"
-
-#: inc/class-admin.php:244
-msgid "Pillar 1 South"
-msgstr "柱1 南面"
-
-#: inc/class-admin.php:252
-msgid "Pillar 1 West"
-msgstr "柱1 西面"
-
-#: inc/class-admin.php:267
-msgid "Pillar 2 East"
-msgstr "柱2 東面"
-
-#: inc/class-admin.php:259
-msgid "Pillar 2 North"
-msgstr "柱2 北面"
-
-#: inc/class-admin.php:263
-msgid "Pillar 2 South"
-msgstr "柱2 南面"
-
-#: inc/class-admin.php:271
-msgid "Pillar 2 West"
-msgstr "柱2 西面"
-
-#: inc/class-admin.php:237
-msgid "Pillar Placement"
-msgstr "柱への配置"
-
-#: inc/class-admin.php:108
-msgid "Place 3D Models (GLB)"
-msgstr "3Dモデル (GLB) の配置"
-
-#: inc/class-admin.php:110
-msgid "Premium Support"
-msgstr "プレミアムサポート"
-
-#: inc/class-front.php:24
+#: inc/class-front.php:27
 msgid "Reset"
 msgstr "リセット"
 
-#: inc/class-front.php:265
+#: inc/class-front.php:248
 msgid "Reset Layout"
 msgstr "配置リセット"
 
-#: inc/class-admin.php:487
+#: inc/class-admin.php:724
 msgid "Reset to default layout."
 msgstr "初期配置に戻しました。"
 
-#: inc/class-admin.php:180
+#: inc/class-front.php:41
+msgid "Room"
+msgstr "部屋"
+
+#: inc/class-admin.php:396
 msgid "Room Brightness"
 msgstr "部屋の明るさ"
 
-#: inc/class-admin.php:61
+#: inc/class-admin.php:226
 msgid "Room Settings & Artwork Placement"
 msgstr "ルーム設定 & 作品配置"
 
-#: inc/class-front.php:266
+#: inc/class-front.php:31
+msgid "Rotate (R)"
+msgstr "回転 (R)"
+
+#: inc/class-admin.php:136
+msgid "Save draft to generate shortcode."
+msgstr "下書きを保存するとショートコードが生成されます。"
+
+#: inc/class-front.php:249
 msgid "Save Layout"
 msgstr "レイアウトを保存"
 
-#: inc/class-admin.php:476
+#: inc/class-admin.php:713
 msgid "Saved successfully!"
 msgstr "保存しました！"
 
-#: inc/class-front.php:22
+#: inc/class-front.php:25
 msgid "Saved!"
 msgstr "保存しました！"
 
-#: inc/class-front.php:259
+#: inc/class-front.php:242 inc/class-admin.php:93
 msgid "Scale:"
 msgstr "サイズ:"
 
-#: inc/class-admin.php:224
+#: inc/class-admin.php:445
+msgid "Select"
+msgstr "選択"
+
+#: inc/class-admin.php:92
+msgid "Select & Move:"
+msgstr "選択と移動:"
+
+#: inc/class-admin.php:455
+msgid "Select Artworks"
+msgstr "作品を選択"
+
+#: inc/class-admin.php:427
+msgid "Select Image"
+msgstr "画像を選択"
+
+#: inc/class-admin.php:74
+msgid "Select images for Floor, Wall, and Ceiling."
+msgstr "床、壁、天井の画像を選択します。"
+
+#: inc/class-admin.php:491
+msgid "Select Texture Image"
+msgstr "テクスチャ画像を選択"
+
+#: inc/class-admin.php:62
+msgid "Set Featured Image:"
+msgstr "アイキャッチ画像の設定:"
+
+#: inc/class-admin.php:78
+msgid "Settings:"
+msgstr "設定:"
+
+#: inc/class-admin.php:117
+msgid "Shortcode"
+msgstr "ショートコード"
+
+#: inc/class-admin.php:142
+msgid "Shortcode:"
+msgstr "ショートコード:"
+
+#: inc/class-admin.php:437
 msgid "South Wall"
 msgstr "南側の壁"
 
-#: inc/class-admin.php:184
+#: inc/class-front.php:42
+msgid "Spotlight"
+msgstr "Spotlight"
+
+#: inc/class-admin.php:400
 msgid "Spotlight Brightness"
-msgstr "スポットライトの明るさ"
+msgstr "照明の明るさ"
 
-#: inc/class-admin.php:209
-msgid "Structure"
-msgstr "構造"
+#: inc/class-admin.php:55
+msgid "Step 1: Add Artworks"
+msgstr "ステップ 1: 作品の追加"
 
-#: inc/class-front.php:222
+#: inc/class-admin.php:69
+msgid "Step 2: Create Exhibition Room"
+msgstr "ステップ 2: 展示室の作成"
+
+#: inc/class-admin.php:83
+msgid "Step 3: 3D Layout Editor"
+msgstr "ステップ 3: 3Dレイアウトエディタ"
+
+#: inc/class-admin.php:99
+msgid "Step 4: Display"
+msgstr "ステップ 4: 表示"
+
+#: inc/class-front.php:203
 msgid "Switch to Editor"
 msgstr "編集モードに切り替え"
 
-#: inc/class-admin.php:189
+#: inc/class-admin.php:412
 msgid "Textures (Image URL)"
 msgstr "テクスチャ (画像URL)"
 
-#: inc/class-admin.php:105
-msgid "Unlock powerful features:"
-msgstr "強力な機能をアンロック:"
+#: inc/class-admin.php:74
+msgid "Textures:"
+msgstr "テクスチャ:"
 
-#: inc/class-admin.php:113
-msgid "Upgrade Now"
-msgstr "今すぐアップグレード"
+#: inc/class-admin.php:87
+msgid "Tip:"
+msgstr "ヒント:"
 
-#: inc/class-admin.php:71
-msgid "Upgrade to Pro"
-msgstr "Pro版へアップグレード"
+#: inc/class-admin.php:63
+msgid ""
+"Upload the image you want to display on the wall using the \"Featured "
+"Image\" box in the right sidebar."
+msgstr "右サイドバーの「アイキャッチ画像」ボックスを使用して、壁に飾りたい画像をアップロードします。"
 
-#: inc/class-front.php:248
+#: edel-museum-generator.php:47 inc/class-admin.php:31 inc/class-admin.php:32
+msgid "Usage Guide"
+msgstr "使い方ガイド"
+
+#: inc/class-admin.php:93
+msgid "Use the slider to resize the artwork."
+msgstr "スライダーを使用して作品のサイズを変更します。"
+
+#: inc/class-admin.php:493
+msgid "Use this image"
+msgstr "この画像を使用"
+
+#: inc/class-front.php:43
 msgid "View Details"
 msgstr "詳細を見る"
 
-#: inc/class-admin.php:196
+#: inc/class-admin.php:90
+msgid "View the Exhibition post on the front-end."
+msgstr "フロントエンドで展示投稿を表示します。"
+
+#: inc/class-admin.php:417
 msgid "Wall"
 msgstr "壁"
 
-#: inc/class-admin.php:232
+#: inc/class-admin.php:434
+msgid "Wall Placement (Images)"
+msgstr "壁への配置 (画像)"
+
+#: inc/class-admin.php:437
 msgid "West Wall"
 msgstr "西側の壁"
+
+#: inc/class-admin.php:87
+msgid ""
+"You must <strong>Publish/Update</strong> the post first to generate the "
+"preview."
+msgstr "プレビューを生成するには、先に投稿を<strong>公開/更新</strong>する必要があります。"

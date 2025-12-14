@@ -63,13 +63,17 @@ jQuery(document).ready(function ($) {
             })
             .appendTo($loadingBarContainer);
 
-        var $loadingText = $('<div>').css({ marginTop: '8px', fontSize: '12px', color: '#888' }).text('Loading... 0%').appendTo($loadingScreen);
+        // ★修正: 多言語対応
+        var $loadingText = $('<div>')
+            .css({ marginTop: '8px', fontSize: '12px', color: '#888' })
+            .text(edel_vars.txt_loading + ' 0%')
+            .appendTo($loadingScreen);
 
         const manager = new THREE.LoadingManager();
         manager.onProgress = function (url, itemsLoaded, itemsTotal) {
             const percent = itemsTotal > 0 ? Math.round((itemsLoaded / itemsTotal) * 100) : 100;
             $loadingBar.css('width', percent + '%');
-            $loadingText.text('Loading... ' + percent + '%');
+            $loadingText.text(edel_vars.txt_loading + ' ' + percent + '%');
         };
         manager.onLoad = function () {
             console.log('Loading Complete.');
@@ -82,13 +86,14 @@ jQuery(document).ready(function ($) {
             if ($loadingScreen.is(':visible')) $loadingScreen.fadeOut(500);
         }, 5000);
 
-        // UI Elements
+        // UI
         var $crosshair = $container.find('#ai-crosshair');
         var $modalOverlay = $container.find('#ai-modal-overlay');
         var $modalClose = $container.find('#ai-modal-close');
         var $modalImage = $container.find('#ai-modal-image');
         var $modalTitle = $container.find('#ai-modal-title');
         var $modalDesc = $container.find('#ai-modal-desc');
+        // Lite版ではリンクボタン非表示だが要素取得は残す
         var $modalLink = $container.find('#ai-modal-link');
         var $joystickZone = $container.find('#ai-joystick-zone');
 
@@ -101,6 +106,7 @@ jQuery(document).ready(function ($) {
         const roomH = room.height || 4;
         const roomD = room.depth || 16;
         const roomStyle = room.style || 'gallery';
+        // Lite: pillars is empty array
         const pillars = layout.pillars || [];
 
         const floorUrl = room.floor_image || '';
@@ -190,6 +196,7 @@ jQuery(document).ready(function ($) {
             })
             .appendTo($container);
 
+        // ★修正: 多言語対応
         var $helpContent = $('<div>')
             .css({
                 background: 'rgba(0, 0, 0, 0.6)',
@@ -200,11 +207,22 @@ jQuery(document).ready(function ($) {
                 backdropFilter: 'blur(2px)'
             })
             .html(
-                '<strong style="border-bottom:1px solid #999; color:#fff; display:block; margin-bottom:5px;">Controls</strong>' +
-                    '<span style="color:#ccc">Move:</span> W, A, S, D<br>' +
-                    '<span style="color:#ccc">Height:</span> E (Up), Q (Down)<br>' +
-                    '<span style="color:#ccc">Look:</span> Mouse<br>' +
-                    '<span style="color:#ccc">Cursor:</span> ESC (Back / Unlock)'
+                '<strong style="border-bottom:1px solid #999; color:#fff; display:block; margin-bottom:5px;">' +
+                    edel_vars.txt_controls_title +
+                    '</strong>' +
+                    '<span style="color:#ccc">' +
+                    edel_vars.txt_move +
+                    '</span> W, A, S, D<br>' +
+                    '<span style="color:#ccc">' +
+                    edel_vars.txt_height +
+                    '</span> E (Up), Q (Down)<br>' +
+                    '<span style="color:#ccc">' +
+                    edel_vars.txt_look +
+                    '</span> Mouse<br>' +
+                    '<span style="color:#ccc">' +
+                    edel_vars.txt_cursor +
+                    '</span> ' +
+                    edel_vars.txt_esc_desc
             )
             .appendTo($helpContainer);
 
@@ -224,18 +242,18 @@ jQuery(document).ready(function ($) {
             })
             .appendTo($helpContainer);
 
-        // ★修正: HelpとSettings両方をトグル
+        // ★修正: UI一括トグル
         $helpBtn.on('click', function (e) {
             e.stopPropagation();
-            $helpContent.slideToggle(200); // ヘルプテキスト
-            if ($uiContainer) $uiContainer.fadeToggle(200); // 設定スライダー
+            $helpContent.slideToggle(200);
+            if ($uiContainer) $uiContainer.fadeToggle(200);
         });
 
         $helpContainer.on('mousedown click', function (e) {
             e.stopPropagation();
         });
 
-        // --- Settings UI Controls ---
+        // --- Settings UI ---
         var $uiContainer = $('<div>')
             .css({
                 position: 'absolute',
@@ -254,22 +272,27 @@ jQuery(document).ready(function ($) {
                 fontSize: '12px'
             })
             .appendTo($container);
+
         var $roomGroup = $('<div>').css({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '200px' });
-        $roomGroup.append($('<span>').text('Room').css({ width: '70px', textAlign: 'right' }));
+        // ★修正: 多言語対応
+        $roomGroup.append($('<span>').text(edel_vars.txt_room).css({ width: '70px', textAlign: 'right' }));
         var $roomSlider = $('<input>', { type: 'range', min: 0, max: 2.5, step: 0.1, value: defaultRoomBrightness }).css({
             flex: 1,
             cursor: 'pointer'
         });
         $roomGroup.append($roomSlider);
         $uiContainer.append($roomGroup);
+
         var $spotGroup = $('<div>').css({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '200px' });
-        $spotGroup.append($('<span>').text('Spotlight').css({ width: '70px', textAlign: 'right' }));
+        // ★修正: 多言語対応
+        $spotGroup.append($('<span>').text(edel_vars.txt_spotlight).css({ width: '70px', textAlign: 'right' }));
         var $spotSlider = $('<input>', { type: 'range', min: 0, max: 2.5, step: 0.1, value: defaultSpotBrightness }).css({
             flex: 1,
             cursor: 'pointer'
         });
         $spotGroup.append($spotSlider);
         $uiContainer.append($spotGroup);
+
         var updateRoomLights = function (val) {
             roomLights.forEach((l) => (l.intensity = l.userData.baseIntensity * val));
         };
@@ -327,7 +350,7 @@ jQuery(document).ready(function ($) {
             else $modalImage.show();
             $modalTitle.text(data.title || 'No Title');
             $modalDesc.text(data.desc || '');
-            if ($modalLink.length) $modalLink.hide();
+            if ($modalLink.length) $modalLink.hide(); // Lite: Hide link
             $modalOverlay.css('display', 'flex');
         }
 
@@ -561,12 +584,13 @@ jQuery(document).ready(function ($) {
         reflectionIntensity,
         manager
     ) {
-        // ... (変更なし) ...
+        // ... (省略) ...
         const styles = { gallery: { wallColor: 0xffffff, bgColor: 0x202020 } };
         const s = styles.gallery;
         scene.background = new THREE.Color(s.bgColor);
 
         let wallMaterial;
+        // ★修正: manager使用
         if (wallUrl) {
             const loader = new THREE.TextureLoader(manager);
             const wallTex = loader.load(wallUrl);
@@ -642,28 +666,6 @@ jQuery(document).ready(function ($) {
         ceilingMesh.rotation.x = Math.PI / 2;
         ceilingMesh.position.y = height / 2 - 0.01;
         scene.add(ceilingMesh);
-
-        if (Array.isArray(pillarsData)) {
-            let pillarMat;
-            if (pillarUrl) {
-                const loader = new THREE.TextureLoader(manager);
-                const pTex = loader.load(pillarUrl);
-                pTex.wrapS = THREE.RepeatWrapping;
-                pTex.wrapT = THREE.RepeatWrapping;
-                pTex.repeat.set(1, height / 2);
-                pillarMat = new THREE.MeshStandardMaterial({ map: pTex, roughness: 0.8 });
-            } else {
-                pillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            }
-            pillarsData.forEach((p) => {
-                const pW = p.w || 2;
-                const pD = p.d || 2;
-                const pGeo = new THREE.BoxGeometry(pW, height, pD);
-                const pMesh = new THREE.Mesh(pGeo, pillarMat);
-                pMesh.position.set(p.x, 0, p.z);
-                scene.add(pMesh);
-            });
-        }
     }
 
     function addArtworkPlane(scene, art, roomW, roomH, roomD, artLights, initialBrightness, interactableObjects, manager) {
@@ -691,72 +693,17 @@ jQuery(document).ready(function ($) {
         if (isPillar) direction = wall.split('_')[1];
 
         let rotY = 0;
-        if (isPillar) {
-            switch (direction) {
-                case 'north':
-                    rotY = Math.PI;
-                    break;
-                case 'south':
-                    rotY = 0;
-                    break;
-                case 'east':
-                    rotY = Math.PI / 2;
-                    break;
-                case 'west':
-                    rotY = -Math.PI / 2;
-                    break;
-            }
-        } else {
-            switch (direction) {
-                case 'north':
-                    rotY = 0;
-                    break;
-                case 'south':
-                    rotY = Math.PI;
-                    break;
-                case 'east':
-                    rotY = -Math.PI / 2;
-                    break;
-                case 'west':
-                    rotY = Math.PI / 2;
-                    break;
-            }
-        }
+        // Lite: シンプルな方向判定
+        if (wall === 'north') rotY = 0;
+        if (wall === 'south') rotY = Math.PI;
+        if (wall === 'east') rotY = -Math.PI / 2;
+        if (wall === 'west') rotY = Math.PI / 2;
 
         if (art.rotationY !== undefined) {
             rotY = parseFloat(art.rotationY);
         }
 
-        if (art.glb) {
-            const loader = new THREE.GLTFLoader(manager);
-            loader.load(art.glb, (gltf) => {
-                const rawModel = gltf.scene;
-
-                const box = new THREE.Box3().setFromObject(rawModel);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-
-                rawModel.position.set(-center.x, -box.min.y, -center.z);
-
-                const wrapper = new THREE.Group();
-                wrapper.add(rawModel);
-
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const targetSize = 1.5;
-                const baseScale = targetSize / maxDim;
-
-                if (art.scale && typeof art.scale === 'object' && art.scale.x) {
-                    wrapper.scale.set(art.scale.x, art.scale.y, art.scale.z || art.scale.x);
-                } else {
-                    wrapper.scale.set(baseScale, baseScale, baseScale);
-                }
-
-                wrapper.position.set(x, y, z);
-                wrapper.rotation.set(0, rotY, 0);
-
-                scene.add(wrapper);
-            });
-        } else if (art.image) {
+        if (art.image) {
             const loader = new THREE.TextureLoader(manager);
             loader.load(art.image, (texture) => {
                 const img = texture.image;
@@ -784,6 +731,7 @@ jQuery(document).ready(function ($) {
     }
 
     function addSpotlight(scene, targetMesh, direction, isPillar, artLights, initialBrightness) {
+        // ... (変更なし) ...
         const geo = targetMesh.geometry;
         let artWidth = 1;
         let artHeight = 1;

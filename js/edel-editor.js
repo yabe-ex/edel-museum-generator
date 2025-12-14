@@ -29,7 +29,7 @@ jQuery(document).ready(function ($) {
     var postId = $container.data('post-id');
     var canvas = $container.find('.ai-museum-canvas')[0];
 
-    // --- ★追加: ローディング画面 ---
+    // --- Loading ---
     var $loadingScreen = $('<div>')
         .attr('id', 'ai-loading-screen')
         .css({
@@ -69,34 +69,29 @@ jQuery(document).ready(function ($) {
         })
         .appendTo($loadingBarContainer);
 
-    var $loadingText = $('<div>').css({ marginTop: '8px', fontSize: '12px', color: '#ccc' }).text('Loading Assets... 0%').appendTo($loadingScreen);
+    var $loadingText = $('<div>')
+        .css({ marginTop: '8px', fontSize: '12px', color: '#ccc' })
+        .text(edel_vars.txt_loading_assets + ' 0%')
+        .appendTo($loadingScreen);
 
-    // --- ★追加: LoadingManager ---
     const manager = new THREE.LoadingManager();
-
     manager.onProgress = function (url, itemsLoaded, itemsTotal) {
-        const percent = itemsTotal > 0 ? Math.round((itemsLoaded / itemsTotal) * 100) : 100;
+        const percent = Math.round((itemsLoaded / itemsTotal) * 100);
         $loadingBar.css('width', percent + '%');
-        $loadingText.text('Loading Assets... ' + percent + '%');
+        $loadingText.text(edel_vars.txt_loading_assets + ' ' + percent + '%');
     };
-
     manager.onLoad = function () {
         console.log('Editor Loading Complete.');
         $loadingScreen.fadeOut(500);
     };
-
     manager.onError = function (url) {
         console.error('Error loading ' + url);
     };
-
-    // 安全装置: 5秒経ったら強制的に開く
     setTimeout(function () {
         if ($loadingScreen.is(':visible')) {
-            console.warn('Loading timed out. Forcing display.');
             $loadingScreen.fadeOut(500);
         }
     }, 5000);
-    // ----------------------------
 
     var $saveBtn = $container.find('#museum-save');
     var $clearBtn = $container.find('#museum-clear');
@@ -104,7 +99,6 @@ jQuery(document).ready(function ($) {
     var $scaleValue = $container.find('#scale-value');
     var $scaleWrapper = $container.find('#museum-scale-wrapper');
 
-    // scale-slider min setup
     $scaleSlider.attr('min', '0.1');
 
     var $rotateWrapper = $('<div>').attr('id', 'museum-rotate-wrapper').css({
@@ -150,8 +144,8 @@ jQuery(document).ready(function ($) {
     var $modeControls = $('<div>').css({ display: 'flex', gap: '5px', marginRight: '15px' });
     $container.find('#museum-save').parent().prepend($modeControls);
 
-    var $btnTranslate = $('<button type="button" class="button">Move (T)</button>').appendTo($modeControls);
-    var $btnRotate = $('<button type="button" class="button">Rotate (R)</button>').appendTo($modeControls);
+    var $btnTranslate = $('<button type="button" class="button">' + edel_vars.txt_move_t + '</button>').appendTo($modeControls);
+    var $btnRotate = $('<button type="button" class="button">' + edel_vars.txt_rotate_r + '</button>').appendTo($modeControls);
 
     function updateModeButtons(mode) {
         $btnTranslate.css({
@@ -249,7 +243,6 @@ jQuery(document).ready(function ($) {
 
     scene.fog = new THREE.FogExp2(0x333333, 0.05);
 
-    // ★修正: managerを渡す
     createRoom(
         scene,
         roomW,
@@ -267,7 +260,6 @@ jQuery(document).ready(function ($) {
     );
 
     const artworks = [];
-    // ★修正: managerを使用
     const loader = new THREE.TextureLoader(manager);
     const gltfLoader = new THREE.GLTFLoader(manager);
 
@@ -280,134 +272,45 @@ jQuery(document).ready(function ($) {
         if (x === undefined || x === null || z === undefined || z === null) {
             const margin = 0.05;
             y = defaultY;
-            if (wall.includes('_') && (wall.startsWith('p1') || wall.startsWith('p2'))) {
-                const parts = wall.split('_');
-                const pId = parts[0];
-                const dir = parts[1];
-                const pillar = pillars.find((p) => p.id === pId);
-                if (pillar) {
-                    const pX = pillar.x || 0;
-                    const pZ = pillar.z || 0;
-                    const pW = pillar.w || 2;
-                    const pD = pillar.d || 2;
-                    if (dir === 'north') {
-                        x = pX;
-                        z = pZ - pD / 2 - margin;
-                    } else if (dir === 'south') {
-                        x = pX;
-                        z = pZ + pD / 2 + margin;
-                    } else if (dir === 'east') {
-                        x = pX + pW / 2 + margin;
-                        z = pZ;
-                    } else if (dir === 'west') {
-                        x = pX - pW / 2 - margin;
-                        z = pZ;
-                    }
-                } else {
+            const rW = roomW;
+            const rD = roomD;
+            switch (wall) {
+                case 'north':
                     x = 0;
+                    z = -rD / 2 + margin;
+                    break;
+                case 'south':
+                    x = 0;
+                    z = rD / 2 - margin;
+                    break;
+                case 'east':
+                    x = rW / 2 - margin;
                     z = 0;
-                }
-            } else {
-                const rW = roomW;
-                const rD = roomD;
-                switch (wall) {
-                    case 'north':
-                        x = 0;
-                        z = -rD / 2 + margin;
-                        break;
-                    case 'south':
-                        x = 0;
-                        z = rD / 2 - margin;
-                        break;
-                    case 'east':
-                        x = rW / 2 - margin;
-                        z = 0;
-                        break;
-                    case 'west':
-                        x = -rW / 2 + margin;
-                        z = 0;
-                        break;
-                    default:
-                        x = 0;
-                        z = -rD / 2 + margin;
-                        break;
-                }
+                    break;
+                case 'west':
+                    x = -rW / 2 + margin;
+                    z = 0;
+                    break;
+                default:
+                    x = 0;
+                    z = -rD / 2 + margin;
+                    break;
             }
         }
 
-        const isPillar = wall.includes('_');
-        let direction = wall;
-        if (isPillar) direction = wall.split('_')[1];
         let rotY = 0;
-        if (isPillar) {
-            switch (direction) {
-                case 'north':
-                    rotY = Math.PI;
-                    break;
-                case 'south':
-                    rotY = 0;
-                    break;
-                case 'east':
-                    rotY = Math.PI / 2;
-                    break;
-                case 'west':
-                    rotY = -Math.PI / 2;
-                    break;
-            }
-        } else {
-            switch (direction) {
-                case 'north':
-                    rotY = 0;
-                    break;
-                case 'south':
-                    rotY = Math.PI;
-                    break;
-                case 'east':
-                    rotY = -Math.PI / 2;
-                    break;
-                case 'west':
-                    rotY = Math.PI / 2;
-                    break;
-            }
-        }
+
+        // Lite: シンプルな方向判定 (修正: switch(direction)を削除)
+        if (wall === 'north') rotY = 0;
+        if (wall === 'south') rotY = Math.PI;
+        if (wall === 'east') rotY = -Math.PI / 2;
+        if (wall === 'west') rotY = Math.PI / 2;
 
         if (art.rotationY !== undefined) {
             rotY = art.rotationY;
         }
 
-        if (art.glb) {
-            gltfLoader.load(art.glb, (gltf) => {
-                const rawModel = gltf.scene;
-                const box = new THREE.Box3().setFromObject(rawModel);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-
-                rawModel.position.set(-center.x, -box.min.y, -center.z);
-
-                const wrapper = new THREE.Group();
-                wrapper.add(rawModel);
-
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const targetSize = 1.5;
-                const baseScale = targetSize / maxDim;
-                wrapper.userData.baseScale = baseScale;
-
-                if (art.scale && typeof art.scale === 'object' && art.scale.x) {
-                    wrapper.scale.set(art.scale.x, art.scale.y, art.scale.z || art.scale.x);
-                } else {
-                    wrapper.scale.set(baseScale, baseScale, baseScale);
-                }
-
-                wrapper.position.set(x, y, z);
-                wrapper.rotation.y = rotY;
-
-                wrapper.userData.index = idx;
-                wrapper.userData.wall = wall;
-                artworks.push(wrapper);
-                scene.add(wrapper);
-            });
-        } else if (art.image) {
-            // 画像がある場合のみロード
+        if (art.image) {
             const initialGeo = new THREE.PlaneGeometry(1, 1);
             const material = new THREE.MeshBasicMaterial({ map: null, side: THREE.DoubleSide });
             const plane = new THREE.Mesh(initialGeo, material);
@@ -452,54 +355,23 @@ jQuery(document).ready(function ($) {
         }
 
         const wallKey = obj.userData.wall || 'north';
-        if (wallKey === 'free') {
-            if (obj.position.y < -10) obj.position.y = -10;
-            if (obj.position.y > 10) obj.position.y = 10;
-            return;
-        }
-
         const margin = 0.05;
         let padding = 0.5;
 
-        if (wallKey.includes('_') && (wallKey.startsWith('p1') || wallKey.startsWith('p2'))) {
-            const parts = wallKey.split('_');
-            const pId = parts[0];
-            const dir = parts[1];
-            const pillar = pillars.find((p) => p.id === pId);
-            if (pillar) {
-                const pX = pillar.x || 0;
-                const pZ = pillar.z || 0;
-                const pW = pillar.w || 2;
-                const pD = pillar.d || 2;
-                if (dir === 'north') {
-                    obj.position.z = pZ - pD / 2 - margin;
-                    obj.position.x = THREE.MathUtils.clamp(obj.position.x, pX - pW / 2 + padding, pX + pW / 2 - padding);
-                } else if (dir === 'south') {
-                    obj.position.z = pZ + pD / 2 + margin;
-                    obj.position.x = THREE.MathUtils.clamp(obj.position.x, pX - pW / 2 + padding, pX + pW / 2 - padding);
-                } else if (dir === 'east') {
-                    obj.position.x = pX + pW / 2 + margin;
-                    obj.position.z = THREE.MathUtils.clamp(obj.position.z, pZ - pD / 2 + padding, pZ + pD / 2 - padding);
-                } else if (dir === 'west') {
-                    obj.position.x = pX - pW / 2 - margin;
-                    obj.position.z = THREE.MathUtils.clamp(obj.position.z, pZ - pD / 2 + padding, pZ + pD / 2 - padding);
-                }
-            }
-        } else {
-            if (wallKey === 'north') {
-                obj.position.z = -(roomD / 2) + margin;
-                obj.position.x = THREE.MathUtils.clamp(obj.position.x, -roomW / 2 + padding, roomW / 2 - padding);
-            } else if (wallKey === 'south') {
-                obj.position.z = roomD / 2 - margin;
-                obj.position.x = THREE.MathUtils.clamp(obj.position.x, -roomW / 2 + padding, roomW / 2 - padding);
-            } else if (wallKey === 'east') {
-                obj.position.x = roomW / 2 - margin;
-                obj.position.z = THREE.MathUtils.clamp(obj.position.z, -roomD / 2 + padding, roomD / 2 - padding);
-            } else if (wallKey === 'west') {
-                obj.position.x = -(roomW / 2) + margin;
-                obj.position.z = THREE.MathUtils.clamp(obj.position.z, -roomD / 2 + padding, roomD / 2 - padding);
-            }
+        if (wallKey === 'north') {
+            obj.position.z = -(roomD / 2) + margin;
+            obj.position.x = THREE.MathUtils.clamp(obj.position.x, -roomW / 2 + padding, roomW / 2 - padding);
+        } else if (wallKey === 'south') {
+            obj.position.z = roomD / 2 - margin;
+            obj.position.x = THREE.MathUtils.clamp(obj.position.x, -roomW / 2 + padding, roomW / 2 - padding);
+        } else if (wallKey === 'east') {
+            obj.position.x = roomW / 2 - margin;
+            obj.position.z = THREE.MathUtils.clamp(obj.position.z, -roomD / 2 + padding, roomD / 2 - padding);
+        } else if (wallKey === 'west') {
+            obj.position.x = -(roomW / 2) + margin;
+            obj.position.z = THREE.MathUtils.clamp(obj.position.z, -roomD / 2 + padding, roomD / 2 - padding);
         }
+
         const halfH = roomH / 2;
         const limitY = halfH - 0.6;
         obj.position.y = THREE.MathUtils.clamp(obj.position.y, -limitY, limitY);
@@ -619,7 +491,7 @@ jQuery(document).ready(function ($) {
         });
 
         var originalText = $saveBtn.text();
-        $saveBtn.prop('disabled', true).text('Saving...');
+        $saveBtn.prop('disabled', true).text(edel_vars.txt_loading || 'Saving...');
 
         $.ajax({
             url: edel_vars.ajaxurl,
@@ -653,12 +525,12 @@ jQuery(document).ready(function ($) {
                     location.reload();
                 } else {
                     alert(edel_vars.txt_error);
-                    $clearBtn.prop('disabled', false).text('Reset Layout');
+                    $clearBtn.prop('disabled', false).text(edel_vars.txt_reset);
                 }
             },
             error: function () {
                 alert(edel_vars.txt_error);
-                $clearBtn.prop('disabled', false).text('Reset Layout');
+                $clearBtn.prop('disabled', false).text(edel_vars.txt_reset);
             }
         });
     });
@@ -691,12 +563,13 @@ jQuery(document).ready(function ($) {
         reflectionIntensity,
         manager
     ) {
+        // ... (Lite logic) ...
         const styles = { gallery: { wallColor: 0xffffff, bgColor: 0x202020 } };
         const s = styles.gallery;
         scene.background = new THREE.Color(s.bgColor);
 
         let wallMaterial;
-        // ★修正: managerを使用
+        // ★修正: manager使用
         if (wallUrl) {
             const loader = new THREE.TextureLoader(manager);
             const wallTex = loader.load(wallUrl);
@@ -772,27 +645,5 @@ jQuery(document).ready(function ($) {
         ceilingMesh.rotation.x = Math.PI / 2;
         ceilingMesh.position.y = height / 2 - 0.01;
         scene.add(ceilingMesh);
-
-        if (Array.isArray(pillarsData)) {
-            let pillarMat;
-            if (pillarUrl) {
-                const loader = new THREE.TextureLoader(manager);
-                const pTex = loader.load(pillarUrl);
-                pTex.wrapS = THREE.RepeatWrapping;
-                pTex.wrapT = THREE.RepeatWrapping;
-                pTex.repeat.set(1, height / 2);
-                pillarMat = new THREE.MeshStandardMaterial({ map: pTex, roughness: 0.8 });
-            } else {
-                pillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            }
-            pillarsData.forEach((p) => {
-                const pW = p.w || 2;
-                const pD = p.d || 2;
-                const pGeo = new THREE.BoxGeometry(pW, height, pD);
-                const pMesh = new THREE.Mesh(pGeo, pillarMat);
-                pMesh.position.set(p.x, 0, p.z);
-                scene.add(pMesh);
-            });
-        }
     }
 });
