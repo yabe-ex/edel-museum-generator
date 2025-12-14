@@ -7,13 +7,213 @@ class EdelMuseumGeneratorAdmin {
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_meta_fields'));
 
-        // AJAX Handles
         add_action('wp_ajax_edel_museum_save_layout', array($this, 'ajax_save_layout'));
         add_action('wp_ajax_edel_museum_clear_layout', array($this, 'ajax_clear_layout'));
+
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+
+        add_action('admin_menu', array($this, 'add_help_menu'));
+
+        // ★追加: 一覧画面にカラム追加
+        add_filter('manage_edel_exhibition_posts_columns', array($this, 'add_shortcode_column_head'));
+        add_action('manage_edel_exhibition_posts_custom_column', array($this, 'add_shortcode_column_content'), 10, 2);
+
+        // ★追加: 編集画面タイトル下にショートコード表示
+        add_action('edit_form_after_title', array($this, 'render_shortcode_after_title'));
+
+        // ★追加: コピー用スクリプト出力
+        add_action('admin_footer', array($this, 'print_admin_scripts'));
+    }
+
+    public function enqueue_admin_scripts() {
+        wp_enqueue_media();
+    }
+
+    public function add_help_menu() {
+        add_submenu_page(
+            'edit.php?post_type=edel_exhibition',
+            __('Usage Guide', 'edel-museum-generator'),
+            __('Usage Guide', 'edel-museum-generator'),
+            'edit_posts',
+            'edel-museum-help',
+            array($this, 'render_help_page')
+        );
+    }
+
+    // ★追加: ショートコードカラムのヘッダー
+    public function add_shortcode_column_head($columns) {
+        // Dateの前に追加したいので配列操作
+        $new_columns = array();
+        foreach ($columns as $key => $value) {
+            if ($key === 'date') {
+                $new_columns['shortcode'] = __('Shortcode', 'edel-museum-generator');
+            }
+            $new_columns[$key] = $value;
+        }
+        return $new_columns;
+    }
+
+    // ★追加: ショートコードカラムの内容
+    public function add_shortcode_column_content($column_name, $post_id) {
+        if ($column_name == 'shortcode') {
+            $shortcode = '[edel_museum id="' . $post_id . '"]';
+            echo '<div style="display:flex; align-items:center; gap:5px;">';
+            echo '<input type="text" value="' . esc_attr($shortcode) . '" readonly style="width:160px; background:#f0f0f1; border:1px solid #ccc; font-size:12px; padding:2px 5px;" onclick="this.select();">';
+            echo '<button type="button" class="button button-small edel-copy-btn" data-code="' . esc_attr($shortcode) . '"><span class="dashicons dashicons-admin-page" style="line-height:26px; font-size:14px;"></span></button>';
+            echo '</div>';
+        }
+    }
+
+    // ★追加: 編集画面タイトル下のショートコード表示
+    public function render_shortcode_after_title($post) {
+        if ($post->post_type !== 'edel_exhibition') return;
+
+        // 新規作成時はIDが確定していないため表示しない、または案内を表示
+        if ($post->post_status === 'auto-draft') {
+            echo '<div style="margin-top:10px; color:#666;">' . __('Save draft to generate shortcode.', 'edel-museum-generator') . '</div>';
+            return;
+        }
+
+        $shortcode = '[edel_museum id="' . $post->ID . '"]';
+?>
+        <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; background: #fff; padding: 10px; border: 1px solid #ccd0d4; border-left: 4px solid #2271b1; box-shadow: 0 1px 1px rgba(0,0,0,0.04);">
+            <strong style="font-size:13px;"><?php _e('Shortcode:', 'edel-museum-generator'); ?></strong>
+            <input type="text" id="edel-top-shortcode" value="<?php echo esc_attr($shortcode); ?>" readonly style="background:#f9f9f9; border:1px solid #ddd; width:200px; font-family:monospace;" onclick="this.select();">
+            <button type="button" class="button edel-copy-btn" data-code="<?php echo esc_attr($shortcode); ?>">
+                <?php _e('Copy to Clipboard', 'edel-museum-generator'); ?>
+            </button>
+            <span id="edel-copy-msg" style="color:green; display:none; font-weight:bold; font-size:12px;"><?php _e('Copied!', 'edel-museum-generator'); ?></span>
+        </div>
+        <?php
+    }
+
+    // ★追加: コピー機能用JS
+    public function print_admin_scripts() {
+        // 展示設定ページのみで動作
+        $screen = get_current_screen();
+        if ($screen && $screen->post_type === 'edel_exhibition') {
+        ?>
+            <script>
+                jQuery(document).ready(function($) {
+                    $('.edel-copy-btn').on('click', function(e) {
+                        e.preventDefault();
+                        var code = $(this).data('code');
+                        var $btn = $(this);
+
+                        // クリップボードへコピー
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(code).then(function() {
+                                showCopied($btn);
+                            }, function(err) {
+                                // 失敗時はselectしてコピーを促す
+                                alert('Press Ctrl+C to copy');
+                            });
+                        } else {
+                            // 古いブラウザ対応
+                            var $temp = $("<input>");
+                            $("body").append($temp);
+                            $temp.val(code).select();
+                            document.execCommand("copy");
+                            $temp.remove();
+                            showCopied($btn);
+                        }
+                    });
+
+                    function showCopied($btn) {
+                        // 一覧画面の場合ボタンの文字を変える、編集画面の場合はメッセージを出す
+                        if ($btn.next('#edel-copy-msg').length) {
+                            $btn.next('#edel-copy-msg').fadeIn().delay(1000).fadeOut();
+                        } else {
+                            var originalText = $btn.html();
+                            $btn.text('Copied!');
+                            setTimeout(function() {
+                                $btn.html(originalText);
+                            }, 1500);
+                        }
+                    }
+                });
+            </script>
+        <?php
+        }
+    }
+
+    public function render_help_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php _e('Edel Museum Generator - Usage Guide', 'edel-museum-generator'); ?></h1>
+
+            <div style="max-width: 1000px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 20px;">
+
+                <div style="margin-bottom: 30px; padding: 15px; background: #e5f5fa; border-left: 4px solid #2271b1;">
+                    <strong><?php _e('For more detailed instructions and tutorials, please visit:', 'edel-museum-generator'); ?></strong><br>
+                    <a href="https://edel-hearts.com/edel-museum-generator-usage" target="_blank" style="font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 5px;">
+                        https://edel-hearts.com/edel-museum-generator-usage <span class="dashicons dashicons-external" style="font-size:18px; vertical-align: bottom;"></span>
+                    </a>
+                </div>
+
+                <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px;">
+                    <span class="dashicons dashicons-art" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
+                    Step 1: Add Artworks
+                </h2>
+                <p>Register the 2D artworks (paintings/photos) you want to display.</p>
+                <ol style="margin-left: 20px; line-height: 1.8;">
+                    <li>Go to <strong>Museum Artworks > Add New Artwork</strong>.</li>
+                    <li>Enter the <strong>Title</strong> and <strong>Description</strong>.</li>
+                    <li>
+                        <strong>Set Featured Image:</strong><br>
+                        Upload the image you want to display on the wall using the "Featured Image" box in the right sidebar.
+                    </li>
+                </ol>
+
+                <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px; margin-top: 40px;">
+                    <span class="dashicons dashicons-building" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
+                    Step 2: Create Exhibition Room
+                </h2>
+                <p>Configure the room and place your artworks on the walls.</p>
+                <ol style="margin-left: 20px; line-height: 1.8;">
+                    <li>Go to <strong>Exhibition Settings > Add New Exhibition</strong>.</li>
+                    <li><strong>Textures:</strong> Select images for Floor, Wall, and Ceiling.</li>
+                    <li><strong>Placement:</strong>
+                        Click the <strong>"Select"</strong> button next to each wall (North, South, East, West) to choose artworks from your library.
+                    </li>
+                    <li><strong>Settings:</strong> Adjust Brightness and <strong>Movement Speed</strong>.</li>
+                </ol>
+
+                <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px; margin-top: 40px;">
+                    <span class="dashicons dashicons-move" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
+                    Step 3: Layout Editor
+                </h2>
+                <p>Adjust the layout visually.</p>
+                <div style="background: #f0f0f1; padding: 15px; border-left: 4px solid #2271b1;">
+                    <strong><span class="dashicons dashicons-lightbulb"></span> Tip:</strong> You must <strong>Publish/Update</strong> the post first to generate the preview.
+                </div>
+                <ol style="margin-left: 20px; line-height: 1.8; margin-top: 15px;">
+                    <li>View the Exhibition post on the front-end.</li>
+                    <li>Click <strong>"Switch to Editor"</strong>.</li>
+                    <li><strong>Select & Move:</strong> Click an artwork and use the arrows to move it.</li>
+                    <li><strong>Scale:</strong> Use the slider to resize the artwork.</li>
+                    <li>Click <strong>"Save Layout"</strong>.</li>
+                </ol>
+
+                <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px; margin-top: 40px;">
+                    <span class="dashicons dashicons-shortcode" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
+                    Step 4: Display
+                </h2>
+                <p>You can copy the shortcode from the "Exhibition Settings" list or the edit screen.</p>
+                <code style="background: #e5e5e5; padding: 10px; display: block; margin: 10px 0; font-size: 16px;">
+                    [edel_museum id="123"]
+                </code>
+
+                <hr style="margin: 40px 0;">
+                <p style="text-align: right; color: #888;">
+                    Edel Museum Generator Lite v<?php echo EDEL_MUSEUM_GENERATOR_VERSION; ?>
+                </p>
+            </div>
+        </div>
+    <?php
     }
 
     public function register_cpt() {
-        // Artwork CPT
         register_post_type('edel_artwork', array(
             'labels' => array(
                 'name' => __('Museum Artworks', 'edel-museum-generator'),
@@ -28,7 +228,6 @@ class EdelMuseumGeneratorAdmin {
             'show_in_rest' => true,
         ));
 
-        // Exhibition CPT
         register_post_type('edel_exhibition', array(
             'labels' => array(
                 'name' => __('Exhibition Settings', 'edel-museum-generator'),
@@ -45,67 +244,7 @@ class EdelMuseumGeneratorAdmin {
     }
 
     public function add_meta_boxes() {
-        add_meta_box(
-            'edel_art_meta',
-            __('Artwork Options', 'edel-museum-generator'),
-            array($this, 'render_art_meta'),
-            'edel_artwork',
-            'normal',
-            'high'
-        );
-
-        add_meta_box(
-            'edel_room_meta',
-            __('Room Settings & Artwork Placement', 'edel-museum-generator'),
-            array($this, 'render_room_meta'),
-            'edel_exhibition',
-            'normal',
-            'high'
-        );
-
-        // Pro版への導線サイドバー
-        add_meta_box(
-            'edel_pro_sidebar',
-            __('Upgrade to Pro', 'edel-museum-generator'),
-            array($this, 'render_pro_sidebar'),
-            'edel_exhibition',
-            'side',
-            'high'
-        );
-    }
-
-    public function render_art_meta($post) {
-?>
-        <div style="background: #f0f6fc; padding: 15px; border-left: 4px solid #72aee6;">
-            <p style="margin-top:0; font-weight:bold; color: #1d2327;">
-                <?php _e('Link feature is available in Pro version.', 'edel-museum-generator'); ?>
-            </p>
-            <p style="color: #50575e;">
-                <?php _e('In the Pro version, you can set a URL for each artwork to link to your shop or portfolio.', 'edel-museum-generator'); ?>
-            </p>
-            <a href="https://edel-hearts.com/edel-museum-generator-pro/" target="_blank" class="button button-primary">
-                <?php _e('Get Pro Version', 'edel-museum-generator'); ?>
-            </a>
-        </div>
-    <?php
-    }
-
-    public function render_pro_sidebar() {
-    ?>
-        <div style="text-align: center;">
-            <p><strong>Edel Museum Generator Pro</strong></p>
-            <p style="font-size:13px; color:#666;"><?php _e('Unlock powerful features:', 'edel-museum-generator'); ?></p>
-            <ul style="text-align: left; list-style: disc; margin-left: 20px; font-size: 12px; color:#444;">
-                <li><?php _e('Link Artworks to URLs', 'edel-museum-generator'); ?></li>
-                <li><?php _e('Place 3D Models (GLB)', 'edel-museum-generator'); ?></li>
-                <li><?php _e('Auto-Tour Mode', 'edel-museum-generator'); ?></li>
-                <li><?php _e('Premium Support', 'edel-museum-generator'); ?></li>
-            </ul>
-            <a href="https://edel-hearts.com/edel-museum-generator-pro/" target="_blank" class="button button-primary" style="width:100%; text-align:center; margin-top:10px;">
-                <?php _e('Upgrade Now', 'edel-museum-generator'); ?>
-            </a>
-        </div>
-    <?php
+        add_meta_box('edel_room_meta', __('Room Settings & Artwork Placement', 'edel-museum-generator'), array($this, 'render_room_meta'), 'edel_exhibition', 'normal', 'high');
     }
 
     public function render_room_meta($post) {
@@ -113,27 +252,20 @@ class EdelMuseumGeneratorAdmin {
         $defaults = array(
             'floor_img' => '',
             'wall_img' => '',
-            'pillar_img' => '',
             'ceiling_img' => '',
-            'pillars' => '0',
             'room_brightness' => '1.2',
             'spot_brightness' => '1.0',
+            'movement_speed' => '20.0',
             'north' => '',
             'south' => '',
             'east' => '',
             'west' => '',
-            'p1_north' => '',
-            'p1_south' => '',
-            'p1_east' => '',
-            'p1_west' => '',
-            'p2_north' => '',
-            'p2_south' => '',
-            'p2_east' => '',
-            'p2_west' => '',
         );
         $meta = array_merge($defaults, $meta);
 
         wp_nonce_field('edel_museum_meta_save', 'edel_museum_meta_nonce');
+
+        $artworks = get_posts(array('post_type' => 'edel_artwork', 'posts_per_page' => -1, 'post_status' => 'publish'));
     ?>
         <style>
             .edel-meta-table {
@@ -164,9 +296,122 @@ class EdelMuseumGeneratorAdmin {
                 margin: 20px 0 10px;
                 font-weight: bold;
             }
+
+            #edel-art-picker-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 9999;
+            }
+
+            #edel-picker-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #fff;
+                width: 90%;
+                max-width: 800px;
+                height: 80%;
+                border-radius: 5px;
+                display: flex;
+                flexDirection: column;
+                overflow: hidden;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+
+            #edel-picker-header {
+                padding: 15px;
+                border-bottom: 1px solid #eee;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: #f9f9f9;
+            }
+
+            #edel-picker-body {
+                padding: 15px;
+                overflow-y: auto;
+                flex: 1;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-content: flex-start;
+            }
+
+            .edel-art-item {
+                width: 120px;
+                border: 2px solid #ddd;
+                padding: 5px;
+                border-radius: 4px;
+                cursor: pointer;
+                text-align: center;
+                transition: 0.2s;
+                background: #fff;
+                position: relative;
+            }
+
+            .edel-art-item:hover {
+                border-color: #2271b1;
+            }
+
+            .edel-art-item.selected {
+                border-color: #2271b1;
+                background: #e5f5fa;
+            }
+
+            .edel-art-item.disabled {
+                opacity: 0.6;
+                pointer-events: none;
+                background: #f0f0f1;
+                border-color: #ccc;
+            }
+
+            .edel-art-item.disabled::after {
+                content: 'Placed';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.7);
+                color: #fff;
+                padding: 2px 6px;
+                font-size: 10px;
+                border-radius: 3px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .edel-art-item.hidden {
+                display: none;
+            }
+
+            .edel-art-thumb {
+                width: 100%;
+                height: 80px;
+                object-fit: cover;
+                background: #eee;
+            }
+
+            .edel-art-title {
+                font-size: 11px;
+                margin-top: 5px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .edel-open-picker,
+            .edel-upload-texture {
+                margin-left: 5px !important;
+            }
         </style>
 
-        <div class="edel-section-title"><?php _e('Lighting Settings (Default)', 'edel-museum-generator'); ?></div>
+        <div class="edel-section-title"><?php _e('Lighting & Movement', 'edel-museum-generator'); ?></div>
         <table class="edel-meta-table">
             <tr>
                 <th><?php _e('Room Brightness', 'edel-museum-generator'); ?></th>
@@ -176,94 +421,173 @@ class EdelMuseumGeneratorAdmin {
                 <th><?php _e('Spotlight Brightness', 'edel-museum-generator'); ?></th>
                 <td><input type="number" name="edel_room[spot_brightness]" value="<?php echo esc_attr($meta['spot_brightness']); ?>" step="0.1" min="0" max="2.5"></td>
             </tr>
+            <tr>
+                <th><?php _e('Movement Speed', 'edel-museum-generator'); ?></th>
+                <td>
+                    <input type="number" name="edel_room[movement_speed]" value="<?php echo esc_attr($meta['movement_speed']); ?>" step="1.0" min="1.0" max="50.0">
+                    <p class="description" style="font-size:11px;">Default: 20.0 (Range: 1.0 - 50.0)</p>
+                </td>
+            </tr>
         </table>
 
         <div class="edel-section-title"><?php _e('Textures (Image URL)', 'edel-museum-generator'); ?></div>
         <table class="edel-meta-table">
-            <tr>
-                <th><?php _e('Floor', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[floor_img]" value="<?php echo esc_attr($meta['floor_img']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Wall', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[wall_img]" value="<?php echo esc_attr($meta['wall_img']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[pillar_img]" value="<?php echo esc_attr($meta['pillar_img']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Ceiling', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[ceiling_img]" value="<?php echo esc_attr($meta['ceiling_img']); ?>"></td>
-            </tr>
+            <?php
+            $textures = array(
+                'floor_img' => 'Floor',
+                'wall_img' => 'Wall',
+                'ceiling_img' => 'Ceiling'
+            );
+            foreach ($textures as $key => $label):
+            ?>
+                <tr>
+                    <th><?php _e($label, 'edel-museum-generator'); ?></th>
+                    <td>
+                        <div style="display:flex;">
+                            <input type="text" id="edel_room_<?php echo $key; ?>" name="edel_room[<?php echo $key; ?>]" value="<?php echo esc_attr($meta[$key]); ?>">
+                            <button type="button" class="button edel-upload-texture" data-target="edel_room_<?php echo $key; ?>"><?php _e('Select Image', 'edel-museum-generator'); ?></button>
+                        </div>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
         </table>
 
-        <div class="edel-section-title"><?php _e('Structure', 'edel-museum-generator'); ?></div>
+        <div class="edel-section-title"><?php _e('Wall Placement (Images)', 'edel-museum-generator'); ?></div>
         <table class="edel-meta-table">
-            <tr>
-                <th><?php _e('Number of Pillars (0-2)', 'edel-museum-generator'); ?></th>
-                <td><input type="number" name="edel_room[pillars]" value="<?php echo esc_attr($meta['pillars']); ?>" min="0" max="2"></td>
-            </tr>
+            <?php foreach (array('north' => 'North Wall', 'south' => 'South Wall', 'east' => 'East Wall', 'west' => 'West Wall') as $key => $label): ?>
+                <tr>
+                    <th><?php _e($label, 'edel-museum-generator'); ?></th>
+                    <td>
+                        <div style="display:flex;">
+                            <input type="text" id="edel_room_<?php echo $key; ?>" class="edel-placement-input" name="edel_room[<?php echo $key; ?>]" value="<?php echo esc_attr($meta[$key]); ?>">
+                            <button type="button" class="button edel-open-picker" data-target="edel_room_<?php echo $key; ?>"><?php _e('Select', 'edel-museum-generator'); ?></button>
+                        </div>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
         </table>
 
-        <div class="edel-section-title"><?php _e('Artwork Placement (Comma separated IDs)', 'edel-museum-generator'); ?></div>
-        <table class="edel-meta-table">
-            <tr>
-                <th><?php _e('North Wall', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[north]" value="<?php echo esc_attr($meta['north']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('South Wall', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[south]" value="<?php echo esc_attr($meta['south']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('East Wall', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[east]" value="<?php echo esc_attr($meta['east']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('West Wall', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[west]" value="<?php echo esc_attr($meta['west']); ?>"></td>
-            </tr>
-        </table>
+        <div id="edel-art-picker-modal">
+            <div id="edel-picker-content">
+                <div id="edel-picker-header">
+                    <h3 id="edel-picker-title"><?php _e('Select Artworks', 'edel-museum-generator'); ?></h3>
+                    <button type="button" id="edel-picker-close" class="button"><?php _e('Close', 'edel-museum-generator'); ?></button>
+                </div>
+                <div id="edel-picker-body">
+                    <?php if ($artworks): foreach ($artworks as $art):
+                            $img_url = get_the_post_thumbnail_url($art->ID, 'thumbnail');
+                            $has_img = $img_url ? '1' : '0';
+                    ?>
+                            <div class="edel-art-item"
+                                data-id="<?php echo $art->ID; ?>"
+                                data-has-img="<?php echo $has_img; ?>">
+                                <?php if ($img_url): ?><img src="<?php echo $img_url; ?>" class="edel-art-thumb"><?php else: ?><div class="edel-art-thumb" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;">No Image</div><?php endif; ?>
+                                <div class="edel-art-title"><?php echo esc_html($art->post_title); ?></div>
+                                <div style="font-size:10px;color:#888;">ID: <?php echo $art->ID; ?></div>
+                            </div>
+                        <?php endforeach;
+                    else: ?>
+                        <p style="padding:20px;">No artworks found.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
 
-        <div class="edel-section-title"><?php _e('Pillar Placement', 'edel-museum-generator'); ?></div>
-        <table class="edel-meta-table">
-            <tr>
-                <th><?php _e('Pillar 1 North', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p1_north]" value="<?php echo esc_attr($meta['p1_north']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar 1 South', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p1_south]" value="<?php echo esc_attr($meta['p1_south']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar 1 East', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p1_east]" value="<?php echo esc_attr($meta['p1_east']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar 1 West', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p1_west]" value="<?php echo esc_attr($meta['p1_west']); ?>"></td>
-            </tr>
-            <tr>
-                <td colspan="2" style="background:#fafafa;"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar 2 North', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p2_north]" value="<?php echo esc_attr($meta['p2_north']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar 2 South', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p2_south]" value="<?php echo esc_attr($meta['p2_south']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar 2 East', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p2_east]" value="<?php echo esc_attr($meta['p2_east']); ?>"></td>
-            </tr>
-            <tr>
-                <th><?php _e('Pillar 2 West', 'edel-museum-generator'); ?></th>
-                <td><input type="text" name="edel_room[p2_west]" value="<?php echo esc_attr($meta['p2_west']); ?>"></td>
-            </tr>
-        </table>
+        <script>
+            jQuery(document).ready(function($) {
+                var textureFrame;
+                $('.edel-upload-texture').on('click', function(e) {
+                    e.preventDefault();
+                    var targetId = $(this).data('target');
+                    if (textureFrame) {
+                        textureFrame.targetId = targetId;
+                        textureFrame.open();
+                        return;
+                    }
+
+                    textureFrame = wp.media({
+                        title: 'Select Texture Image',
+                        button: {
+                            text: 'Use this image'
+                        },
+                        multiple: false,
+                        library: {
+                            type: 'image'
+                        }
+                    });
+                    textureFrame.targetId = targetId;
+                    textureFrame.on('select', function() {
+                        var attachment = textureFrame.state().get('selection').first().toJSON();
+                        $('#' + textureFrame.targetId).val(attachment.url);
+                    });
+                    textureFrame.open();
+                });
+
+                var targetInputId = null;
+                var $modal = $('#edel-art-picker-modal');
+
+                $('.edel-open-picker').on('click', function() {
+                    targetInputId = $(this).data('target');
+                    var $targetInput = $('#' + targetInputId);
+                    var val = $targetInput.val();
+
+                    var currentIds = val ? val.split(',').map(function(s) {
+                        return s.trim();
+                    }) : [];
+
+                    var usedIds = [];
+                    $('.edel-placement-input').each(function() {
+                        if ($(this).attr('id') !== targetInputId) {
+                            var v = $(this).val();
+                            if (v) {
+                                var parts = v.split(',');
+                                parts.forEach(function(s) {
+                                    if (s.trim()) usedIds.push(s.trim());
+                                });
+                            }
+                        }
+                    });
+
+                    $('.edel-art-item').each(function() {
+                        var $item = $(this);
+                        var id = String($item.data('id'));
+                        var hasImg = $item.data('has-img') == 1;
+
+                        $item.removeClass('selected disabled hidden');
+
+                        if (!hasImg) {
+                            $item.addClass('hidden');
+                            return;
+                        }
+
+                        if (currentIds.indexOf(id) !== -1) {
+                            $item.addClass('selected');
+                        } else if (usedIds.indexOf(id) !== -1) {
+                            $item.addClass('disabled');
+                        }
+                    });
+
+                    $modal.show();
+                });
+
+                $('#edel-picker-close').on('click', function() {
+                    $modal.hide();
+                });
+                $modal.on('click', function(e) {
+                    if (e.target === this) $modal.hide();
+                });
+
+                $('.edel-art-item').on('click', function() {
+                    if ($(this).hasClass('disabled') || $(this).hasClass('hidden')) return;
+                    $(this).toggleClass('selected');
+                    var ids = [];
+                    $('.edel-art-item.selected:not(.hidden)').each(function() {
+                        ids.push($(this).data('id'));
+                    });
+                    $('#' + targetInputId).val(ids.join(', '));
+                });
+            });
+        </script>
 <?php
     }
 
@@ -271,8 +595,6 @@ class EdelMuseumGeneratorAdmin {
         if (!isset($_POST['edel_museum_meta_nonce']) || !wp_verify_nonce($_POST['edel_museum_meta_nonce'], 'edel_museum_meta_save')) return;
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
         if (!current_user_can('edit_post', $post_id)) return;
-
-        // Lite版なのでリンク保存処理は無し
 
         if (isset($_POST['edel_room'])) {
             $clean_data = array();
@@ -282,6 +604,7 @@ class EdelMuseumGeneratorAdmin {
             update_post_meta($post_id, '_edel_exhibition_data', $clean_data);
 
             $old_json = get_post_meta($post_id, '_edel_museum_layout', true);
+            $old_json = is_string($old_json) ? wp_unslash($old_json) : $old_json;
             $old_layout = $old_json ? json_decode($old_json, true) : null;
             $new_layout = $this->generate_layout_data($post_id, $clean_data);
 
@@ -299,11 +622,10 @@ class EdelMuseumGeneratorAdmin {
                         $new_art['y'] = $old_art['y'];
                         $new_art['z'] = $old_art['z'];
                         if (isset($old_art['scale'])) $new_art['scale'] = $old_art['scale'];
+                        if (isset($old_art['rotationY'])) $new_art['rotationY'] = $old_art['rotationY'];
                     }
                 }
             }
-
-            // ★重要: 文字化け対策 (wp_slash + UNESCAPED_UNICODE)
             $json = wp_json_encode($new_layout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             update_post_meta($post_id, '_edel_museum_layout', wp_slash($json));
         }
@@ -313,15 +635,9 @@ class EdelMuseumGeneratorAdmin {
         $room_w = 16;
         $room_h = 4;
         $room_d = 16;
-        $num_pillars = intval($meta['pillars']);
+        $num_pillars = 0;
         $pillars_data = array();
-        $pillar_size = 2;
-        if ($num_pillars === 1) {
-            $pillars_data[] = array('id' => 'p1', 'x' => 0, 'z' => 0, 'w' => $pillar_size, 'd' => $pillar_size);
-        } elseif ($num_pillars === 2) {
-            $pillars_data[] = array('id' => 'p1', 'x' => -3, 'z' => 0, 'w' => $pillar_size, 'd' => $pillar_size);
-            $pillars_data[] = array('id' => 'p2', 'x' => 3, 'z' => 0, 'w' => $pillar_size, 'd' => $pillar_size);
-        }
+
         $layout = array(
             'room' => array(
                 'width' => $room_w,
@@ -329,10 +645,11 @@ class EdelMuseumGeneratorAdmin {
                 'depth' => $room_d,
                 'floor_image'   => $meta['floor_img'],
                 'wall_image'    => $meta['wall_img'],
-                'pillar_image'  => $meta['pillar_img'],
+                'pillar_image'  => '',
                 'ceiling_image' => $meta['ceiling_img'],
                 'room_brightness' => isset($meta['room_brightness']) ? $meta['room_brightness'] : '1.2',
                 'spot_brightness' => isset($meta['spot_brightness']) ? $meta['spot_brightness'] : '1.0',
+                'movement_speed'  => isset($meta['movement_speed']) ? $meta['movement_speed'] : '20.0',
             ),
             'pillars' => $pillars_data,
             'artworks' => array(),
@@ -342,97 +659,56 @@ class EdelMuseumGeneratorAdmin {
             'south' => $meta['south'],
             'east'  => $meta['east'],
             'west'  => $meta['west'],
-            'p1_north' => $meta['p1_north'],
-            'p1_south' => $meta['p1_south'],
-            'p1_east'  => $meta['p1_east'],
-            'p1_west'  => $meta['p1_west'],
-            'p2_north' => $meta['p2_north'],
-            'p2_south' => $meta['p2_south'],
-            'p2_east'  => $meta['p2_east'],
-            'p2_west'  => $meta['p2_west'],
         );
+
         foreach ($walls_map as $wall_key => $ids_str) {
             if (empty($ids_str)) continue;
             $ids = array_filter(array_map('trim', explode(',', $ids_str)));
             if (empty($ids)) continue;
-            $is_pillar = (strpos($wall_key, 'p1_') === 0 || strpos($wall_key, 'p2_') === 0);
-            $target_pillar = null;
-            if ($is_pillar) {
-                $pid = substr($wall_key, 0, 2);
-                foreach ($pillars_data as $p) {
-                    if ($p['id'] === $pid) {
-                        $target_pillar = $p;
-                        break;
-                    }
-                }
-                if (!$target_pillar) continue;
-            }
-            if ($is_pillar) {
-                $dir = substr($wall_key, 3);
-                $wall_w = ($dir === 'north' || $dir === 'south') ? $target_pillar['w'] : $target_pillar['d'];
-            } else {
-                $wall_w = ($wall_key === 'north' || $wall_key === 'south') ? $room_w : $room_d;
-            }
+
+            $wall_w = ($wall_key === 'north' || $wall_key === 'south') ? $room_w : $room_d;
             $margin = 0.5;
-            $effective_width = $wall_w - ($margin * 2);
             $count = count($ids);
             $spacing = 2.0;
-            if ($count * $spacing > $effective_width) $spacing = $effective_width / $count;
+            if ($count * $spacing > ($wall_w - 1.0)) $spacing = ($wall_w - 1.0) / $count;
             $total_span = ($count - 1) * $spacing;
             $start_pos = - ($total_span / 2);
+
             foreach ($ids as $i => $art_id) {
                 $art_post = get_post($art_id);
                 if (!$art_post || $art_post->post_type !== 'edel_artwork') continue;
                 $img_url = get_the_post_thumbnail_url($art_id, 'large');
                 if (!$img_url) continue;
+
                 $offset = $start_pos + ($i * $spacing);
                 $px = 0;
                 $pz = 0;
                 $p_offset = 0.05;
-                if (!$is_pillar) {
-                    if ($wall_key === 'north') {
-                        $px = $offset;
-                        $pz = - ($room_d / 2) + $p_offset;
-                    } elseif ($wall_key === 'south') {
-                        $px = $offset;
-                        $pz = ($room_d / 2) - $p_offset;
-                    } elseif ($wall_key === 'east') {
-                        $pz = $offset;
-                        $px = ($room_w / 2) - $p_offset;
-                    } elseif ($wall_key === 'west') {
-                        $pz = $offset;
-                        $px = - ($room_w / 2) + $p_offset;
-                    }
-                } else {
-                    $cx = $target_pillar['x'];
-                    $cz = $target_pillar['z'];
-                    $hw = $target_pillar['w'] / 2;
-                    $hd = $target_pillar['d'] / 2;
-                    $dir = substr($wall_key, 3);
-                    if ($dir === 'north') {
-                        $px = $cx + $offset;
-                        $pz = $cz - $hd - $p_offset;
-                    } elseif ($dir === 'south') {
-                        $px = $cx + $offset;
-                        $pz = $cz + $hd + $p_offset;
-                    } elseif ($dir === 'east') {
-                        $pz = $cz + $offset;
-                        $px = $cx + $hw + $p_offset;
-                    } elseif ($dir === 'west') {
-                        $pz = $cz + $offset;
-                        $px = $cx - $hw - $p_offset;
-                    }
+
+                if ($wall_key === 'north') {
+                    $px = $offset;
+                    $pz = - ($room_d / 2) + $p_offset;
+                } elseif ($wall_key === 'south') {
+                    $px = $offset;
+                    $pz = ($room_d / 2) - $p_offset;
+                } elseif ($wall_key === 'east') {
+                    $pz = $offset;
+                    $px = ($room_w / 2) - $p_offset;
+                } elseif ($wall_key === 'west') {
+                    $pz = $offset;
+                    $px = - ($room_w / 2) + $p_offset;
                 }
+
                 $layout['artworks'][] = array(
                     'id'    => $art_id,
                     'image' => $img_url,
                     'title' => $art_post->post_title,
                     'desc'  => wp_strip_all_tags($art_post->post_content),
-                    'link'  => get_post_meta($art_id, '_edel_art_link', true),
+                    'link'  => '',
                     'wall'  => $wall_key,
                     'x'     => $px,
-                    'y' => 1.5,
-                    'z' => $pz,
+                    'y'     => 1.5,
+                    'z'     => $pz,
                     'scale' => array('x' => 1, 'y' => 1, 'z' => 1),
                 );
             }
@@ -442,21 +718,20 @@ class EdelMuseumGeneratorAdmin {
 
     public function ajax_save_layout() {
         if (!current_user_can('edit_posts')) wp_send_json_error(array('message' => __('Permission denied', 'edel-museum-generator')));
-        check_ajax_referer(EDEL_MUSEUM_GENERATOR_SLUG, '_nonce');
+        check_ajax_referer('edel-museum-generator', '_nonce');
 
         $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
         $layout  = isset($_POST['layout'])  ? wp_unslash($_POST['layout']) : '';
 
         if (!$post_id || !$layout) wp_send_json_error(array('message' => __('Missing data', 'edel-museum-generator')));
 
-        // ★重要: AJAX保存時も wp_slash をかける
         update_post_meta($post_id, '_edel_museum_layout', wp_slash($layout));
         wp_send_json_success(array('message' => __('Saved successfully!', 'edel-museum-generator')));
     }
 
     public function ajax_clear_layout() {
         if (!current_user_can('edit_posts')) wp_send_json_error(array('message' => __('Permission denied', 'edel-museum-generator')));
-        check_ajax_referer(EDEL_MUSEUM_GENERATOR_SLUG, '_nonce');
+        check_ajax_referer('edel-museum-generator', '_nonce');
 
         $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
         if (!$post_id) wp_send_json_error(array('message' => __('Missing data', 'edel-museum-generator')));

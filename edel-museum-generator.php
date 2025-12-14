@@ -2,8 +2,8 @@
 
 /**
  * Plugin Name: Edel Museum Generator
- * Description: Easily create immersive 3D virtual museums and galleries. Walk through the space, view artworks, and customize textures.
- * Version: 1.0.0
+ * Description: Create a 3D virtual museum easily.
+ * Version: 1.2.0
  * Author: Edel Hearts
  * Author URI: https://edel-hearts.com
  * Text Domain: edel-museum-generator
@@ -13,36 +13,40 @@
 
 if (!defined('ABSPATH')) exit;
 
-$info = get_file_data(__FILE__, array('plugin_name' => 'Plugin Name', 'version' => 'Version'));
+$info = get_file_data(__FILE__, array('version' => 'Version'));
 
-define('EDEL_MUSEUM_GENERATOR_URL', plugins_url('', __FILE__));
-define('EDEL_MUSEUM_GENERATOR_PATH', dirname(__FILE__));
+// ★定数名を修正
 define('EDEL_MUSEUM_GENERATOR_SLUG', 'edel-museum-generator');
 define('EDEL_MUSEUM_GENERATOR_VERSION', $info['version']);
-define('EDEL_MUSEUM_GENERATOR_DEVELOP', true);
+define('EDEL_MUSEUM_GENERATOR_DEVELOP', false);
+define('EDEL_MUSEUM_GENERATOR_URL', plugins_url('', __FILE__));
+define('EDEL_MUSEUM_GENERATOR_PATH', dirname(__FILE__));
 
 class EdelMuseumGenerator {
     public function init() {
-        // 言語ファイルの読み込み
         add_action('plugins_loaded', array($this, 'load_textdomain'));
 
-        // 管理画面側の処理
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_plugin_links'));
+
+        // 定数を使って読み込み
         require_once EDEL_MUSEUM_GENERATOR_PATH . '/inc/class-admin.php';
         $admin = new EdelMuseumGeneratorAdmin();
         $admin->init();
 
-        // フロントエンドの処理
         require_once EDEL_MUSEUM_GENERATOR_PATH . '/inc/class-front.php';
         $front = new EdelMuseumGeneratorFront();
         $front->init();
     }
 
     public function load_textdomain() {
-        load_plugin_textdomain(
-            'edel-museum-generator',
-            false,
-            dirname(plugin_basename(__FILE__)) . '/languages'
-        );
+        load_plugin_textdomain('edel-museum-generator', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    }
+
+    public function add_plugin_links($links) {
+        $url = admin_url('edit.php?post_type=edel_exhibition&page=edel-museum-help');
+        $settings_link = '<a href="' . esc_url($url) . '" style="font-weight:bold;">' . __('Usage Guide', 'edel-museum-generator') . '</a>';
+        array_unshift($links, $settings_link);
+        return $links;
     }
 }
 
