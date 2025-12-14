@@ -63,7 +63,6 @@ jQuery(document).ready(function ($) {
             })
             .appendTo($loadingBarContainer);
 
-        // ★修正: 多言語対応
         var $loadingText = $('<div>')
             .css({ marginTop: '8px', fontSize: '12px', color: '#888' })
             .text(edel_vars.txt_loading + ' 0%')
@@ -93,7 +92,6 @@ jQuery(document).ready(function ($) {
         var $modalImage = $container.find('#ai-modal-image');
         var $modalTitle = $container.find('#ai-modal-title');
         var $modalDesc = $container.find('#ai-modal-desc');
-        // Lite版ではリンクボタン非表示だが要素取得は残す
         var $modalLink = $container.find('#ai-modal-link');
         var $joystickZone = $container.find('#ai-joystick-zone');
 
@@ -106,7 +104,6 @@ jQuery(document).ready(function ($) {
         const roomH = room.height || 4;
         const roomD = room.depth || 16;
         const roomStyle = room.style || 'gallery';
-        // Lite: pillars is empty array
         const pillars = layout.pillars || [];
 
         const floorUrl = room.floor_image || '';
@@ -129,13 +126,16 @@ jQuery(document).ready(function ($) {
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
         renderer.setSize(width, height);
         renderer.shadowMap.enabled = true;
+        // ★修正: ガンマ補正を有効化
+        renderer.outputEncoding = THREE.sRGBEncoding;
 
         const baseAmbient = new THREE.AmbientLight(0xffffff, 0.1);
         scene.add(baseAmbient);
 
         const roomLights = [];
-        const roomAmbient = new THREE.AmbientLight(0xffffff, 0.6);
-        roomAmbient.userData.baseIntensity = 0.6;
+        // ★修正: 環境光の比率を上げ(0.75)、影を明るくする
+        const roomAmbient = new THREE.AmbientLight(0xffffff, 0.75);
+        roomAmbient.userData.baseIntensity = 0.75;
         scene.add(roomAmbient);
         roomLights.push(roomAmbient);
 
@@ -154,7 +154,8 @@ jQuery(document).ready(function ($) {
 
         const artLights = [];
 
-        scene.fog = new THREE.FogExp2(0x202020, 0.05);
+        // ★修正: フォグの色を明るくし、濃度を下げる
+        scene.fog = new THREE.FogExp2(0xaaaaaa, 0.015);
 
         createRoom(
             scene,
@@ -196,7 +197,6 @@ jQuery(document).ready(function ($) {
             })
             .appendTo($container);
 
-        // ★修正: 多言語対応
         var $helpContent = $('<div>')
             .css({
                 background: 'rgba(0, 0, 0, 0.6)',
@@ -242,7 +242,6 @@ jQuery(document).ready(function ($) {
             })
             .appendTo($helpContainer);
 
-        // ★修正: UI一括トグル
         $helpBtn.on('click', function (e) {
             e.stopPropagation();
             $helpContent.slideToggle(200);
@@ -274,7 +273,6 @@ jQuery(document).ready(function ($) {
             .appendTo($container);
 
         var $roomGroup = $('<div>').css({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '200px' });
-        // ★修正: 多言語対応
         $roomGroup.append($('<span>').text(edel_vars.txt_room).css({ width: '70px', textAlign: 'right' }));
         var $roomSlider = $('<input>', { type: 'range', min: 0, max: 2.5, step: 0.1, value: defaultRoomBrightness }).css({
             flex: 1,
@@ -284,7 +282,6 @@ jQuery(document).ready(function ($) {
         $uiContainer.append($roomGroup);
 
         var $spotGroup = $('<div>').css({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '200px' });
-        // ★修正: 多言語対応
         $spotGroup.append($('<span>').text(edel_vars.txt_spotlight).css({ width: '70px', textAlign: 'right' }));
         var $spotSlider = $('<input>', { type: 'range', min: 0, max: 2.5, step: 0.1, value: defaultSpotBrightness }).css({
             flex: 1,
@@ -350,7 +347,13 @@ jQuery(document).ready(function ($) {
             else $modalImage.show();
             $modalTitle.text(data.title || 'No Title');
             $modalDesc.text(data.desc || '');
-            if ($modalLink.length) $modalLink.hide(); // Lite: Hide link
+            if ($modalLink.length) {
+                if (data.link) {
+                    $modalLink.attr('href', data.link).show();
+                } else {
+                    $modalLink.hide();
+                }
+            }
             $modalOverlay.css('display', 'flex');
         }
 
@@ -584,20 +587,20 @@ jQuery(document).ready(function ($) {
         reflectionIntensity,
         manager
     ) {
-        // ... (省略) ...
-        const styles = { gallery: { wallColor: 0xffffff, bgColor: 0x202020 } };
+        const styles = { gallery: { wallColor: 0xffffff, bgColor: 0xaaaaaa } };
         const s = styles.gallery;
         scene.background = new THREE.Color(s.bgColor);
 
         let wallMaterial;
-        // ★修正: manager使用
         if (wallUrl) {
             const loader = new THREE.TextureLoader(manager);
             const wallTex = loader.load(wallUrl);
+            wallTex.encoding = THREE.sRGBEncoding;
             wallTex.wrapS = THREE.RepeatWrapping;
             wallTex.wrapT = THREE.RepeatWrapping;
             wallTex.repeat.set(width / 4, height / 4);
-            wallMaterial = new THREE.MeshStandardMaterial({ map: wallTex, side: THREE.BackSide, roughness: 0.8 });
+            // ★修正: color: 0xffffffを明示
+            wallMaterial = new THREE.MeshStandardMaterial({ map: wallTex, color: 0xffffff, side: THREE.BackSide, roughness: 0.8 });
         } else {
             wallMaterial = new THREE.MeshStandardMaterial({ color: s.wallColor, side: THREE.BackSide, roughness: 0.9 });
         }
@@ -606,13 +609,14 @@ jQuery(document).ready(function ($) {
 
         const floorGeo = new THREE.PlaneGeometry(width, depth);
         if (useReflection && typeof THREE.Reflector !== 'undefined') {
-            const reflector = new THREE.Reflector(floorGeo, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x444444 });
+            const reflector = new THREE.Reflector(floorGeo, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x666666 });
             reflector.rotation.x = -Math.PI / 2;
             reflector.position.y = -height / 2 - 0.1;
             scene.add(reflector);
             if (floorUrl) {
                 const loader = new THREE.TextureLoader(manager);
                 const floorTex = loader.load(floorUrl);
+                floorTex.encoding = THREE.sRGBEncoding;
                 floorTex.wrapS = THREE.RepeatWrapping;
                 floorTex.wrapT = THREE.RepeatWrapping;
                 floorTex.repeat.set(width / 2, depth / 2);
@@ -637,10 +641,12 @@ jQuery(document).ready(function ($) {
             if (floorUrl) {
                 const loader = new THREE.TextureLoader(manager);
                 const floorTex = loader.load(floorUrl);
+                floorTex.encoding = THREE.sRGBEncoding;
                 floorTex.wrapS = THREE.RepeatWrapping;
                 floorTex.wrapT = THREE.RepeatWrapping;
                 floorTex.repeat.set(width / 2, depth / 2);
-                floorMaterial = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.8, metalness: 0.1 });
+                // ★修正: color: 0xffffffを明示
+                floorMaterial = new THREE.MeshStandardMaterial({ map: floorTex, color: 0xffffff, roughness: 0.8, metalness: 0.1 });
             } else {
                 floorMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.8, metalness: 0.1 });
             }
@@ -654,10 +660,12 @@ jQuery(document).ready(function ($) {
         if (ceilingUrl) {
             const loader = new THREE.TextureLoader(manager);
             const ceilTex = loader.load(ceilingUrl);
+            ceilTex.encoding = THREE.sRGBEncoding;
             ceilTex.wrapS = THREE.RepeatWrapping;
             ceilTex.wrapT = THREE.RepeatWrapping;
             ceilTex.repeat.set(width / 2, depth / 2);
-            ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilTex, side: THREE.FrontSide, roughness: 0.9 });
+            // ★修正: color: 0xffffffを明示
+            ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilTex, color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });
         } else {
             ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });
         }
@@ -669,7 +677,6 @@ jQuery(document).ready(function ($) {
     }
 
     function addArtworkPlane(scene, art, roomW, roomH, roomD, artLights, initialBrightness, interactableObjects, manager) {
-        // ... (変更なし) ...
         let x = art.x;
         let y = art.y;
         let z = art.z;
@@ -693,7 +700,6 @@ jQuery(document).ready(function ($) {
         if (isPillar) direction = wall.split('_')[1];
 
         let rotY = 0;
-        // Lite: シンプルな方向判定
         if (wall === 'north') rotY = 0;
         if (wall === 'south') rotY = Math.PI;
         if (wall === 'east') rotY = -Math.PI / 2;
@@ -706,6 +712,8 @@ jQuery(document).ready(function ($) {
         if (art.image) {
             const loader = new THREE.TextureLoader(manager);
             loader.load(art.image, (texture) => {
+                // ★修正: ガンマ補正を有効化
+                texture.encoding = THREE.sRGBEncoding;
                 const img = texture.image;
                 const aspect = img && img.width && img.height ? img.width / img.height : 1.5;
                 const baseHeight = 1.0;
@@ -731,7 +739,6 @@ jQuery(document).ready(function ($) {
     }
 
     function addSpotlight(scene, targetMesh, direction, isPillar, artLights, initialBrightness) {
-        // ... (変更なし) ...
         const geo = targetMesh.geometry;
         let artWidth = 1;
         let artHeight = 1;

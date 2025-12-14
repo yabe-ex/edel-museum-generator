@@ -161,13 +161,16 @@ jQuery(document).ready(function ($) {
     }
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x333333);
+    // ★修正: 背景色を明るいグレーに変更 (0xaaaaaa)
+    scene.background = new THREE.Color(0xaaaaaa);
 
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
     camera.position.set(0, 8, 18);
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setSize(width, height);
+    // ガンマ補正を有効にして、色をより自然に明るくする
+    renderer.outputEncoding = THREE.sRGBEncoding;
 
     const orbit = new THREE.OrbitControls(camera, renderer.domElement);
     orbit.enableDamping = true;
@@ -232,7 +235,8 @@ jQuery(document).ready(function ($) {
     const reflectionIntensity = parseFloat(room.reflection_intensity) || 0.3;
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.1));
-    const roomAmbient = new THREE.AmbientLight(0xffffff, 0.6 * roomBright);
+    // ★修正: 環境光のベース強度を上げて、影になる部分の黒つぶれを防ぐ
+    const roomAmbient = new THREE.AmbientLight(0xffffff, 0.75 * roomBright);
     scene.add(roomAmbient);
     const dir1 = new THREE.DirectionalLight(0xffffff, 0.6 * roomBright);
     dir1.position.set(5, 10, 7);
@@ -241,7 +245,8 @@ jQuery(document).ready(function ($) {
     dir2.position.set(-5, 5, -5);
     scene.add(dir2);
 
-    scene.fog = new THREE.FogExp2(0x333333, 0.05);
+    // ★修正: フォグの色を明るくし、濃度を下げる (0x333333 -> 0xaaaaaa, 0.05 -> 0.015)
+    scene.fog = new THREE.FogExp2(0xaaaaaa, 0.015);
 
     createRoom(
         scene,
@@ -299,8 +304,6 @@ jQuery(document).ready(function ($) {
         }
 
         let rotY = 0;
-
-        // Lite: シンプルな方向判定 (修正: switch(direction)を削除)
         if (wall === 'north') rotY = 0;
         if (wall === 'south') rotY = Math.PI;
         if (wall === 'east') rotY = -Math.PI / 2;
@@ -315,6 +318,8 @@ jQuery(document).ready(function ($) {
             const material = new THREE.MeshBasicMaterial({ map: null, side: THREE.DoubleSide });
             const plane = new THREE.Mesh(initialGeo, material);
             loader.load(art.image, (texture) => {
+                // テクスチャの色を正しく表示するためのエンコーディング設定
+                texture.encoding = THREE.sRGBEncoding;
                 plane.material.map = texture;
                 plane.material.needsUpdate = true;
                 const img = texture.image;
@@ -563,20 +568,20 @@ jQuery(document).ready(function ($) {
         reflectionIntensity,
         manager
     ) {
-        // ... (Lite logic) ...
-        const styles = { gallery: { wallColor: 0xffffff, bgColor: 0x202020 } };
+        const styles = { gallery: { wallColor: 0xffffff, bgColor: 0xaaaaaa } }; // 背景色を明るく
         const s = styles.gallery;
         scene.background = new THREE.Color(s.bgColor);
 
         let wallMaterial;
-        // ★修正: manager使用
         if (wallUrl) {
             const loader = new THREE.TextureLoader(manager);
             const wallTex = loader.load(wallUrl);
+            wallTex.encoding = THREE.sRGBEncoding; // エンコーディング指定
             wallTex.wrapS = THREE.RepeatWrapping;
             wallTex.wrapT = THREE.RepeatWrapping;
             wallTex.repeat.set(width / 4, height / 4);
-            wallMaterial = new THREE.MeshStandardMaterial({ map: wallTex, side: THREE.BackSide, roughness: 0.8 });
+            // ★修正: color: 0xffffffを明示
+            wallMaterial = new THREE.MeshStandardMaterial({ map: wallTex, color: 0xffffff, side: THREE.BackSide, roughness: 0.8 });
         } else {
             wallMaterial = new THREE.MeshStandardMaterial({ color: s.wallColor, side: THREE.BackSide, roughness: 0.9 });
         }
@@ -585,13 +590,14 @@ jQuery(document).ready(function ($) {
 
         const floorGeo = new THREE.PlaneGeometry(width, depth);
         if (useReflection && typeof THREE.Reflector !== 'undefined') {
-            const reflector = new THREE.Reflector(floorGeo, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x444444 });
+            const reflector = new THREE.Reflector(floorGeo, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x666666 }); // 反射面の色も少し明るく
             reflector.rotation.x = -Math.PI / 2;
             reflector.position.y = -height / 2 - 0.1;
             scene.add(reflector);
             if (floorUrl) {
                 const loader = new THREE.TextureLoader(manager);
                 const floorTex = loader.load(floorUrl);
+                floorTex.encoding = THREE.sRGBEncoding;
                 floorTex.wrapS = THREE.RepeatWrapping;
                 floorTex.wrapT = THREE.RepeatWrapping;
                 floorTex.repeat.set(width / 2, depth / 2);
@@ -616,10 +622,12 @@ jQuery(document).ready(function ($) {
             if (floorUrl) {
                 const loader = new THREE.TextureLoader(manager);
                 const floorTex = loader.load(floorUrl);
+                floorTex.encoding = THREE.sRGBEncoding;
                 floorTex.wrapS = THREE.RepeatWrapping;
                 floorTex.wrapT = THREE.RepeatWrapping;
                 floorTex.repeat.set(width / 2, depth / 2);
-                floorMaterial = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.8, metalness: 0.1 });
+                // ★修正: color: 0xffffffを明示
+                floorMaterial = new THREE.MeshStandardMaterial({ map: floorTex, color: 0xffffff, roughness: 0.8, metalness: 0.1 });
             } else {
                 floorMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.8, metalness: 0.1 });
             }
@@ -633,10 +641,12 @@ jQuery(document).ready(function ($) {
         if (ceilingUrl) {
             const loader = new THREE.TextureLoader(manager);
             const ceilTex = loader.load(ceilingUrl);
+            ceilTex.encoding = THREE.sRGBEncoding;
             ceilTex.wrapS = THREE.RepeatWrapping;
             ceilTex.wrapT = THREE.RepeatWrapping;
             ceilTex.repeat.set(width / 2, depth / 2);
-            ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilTex, side: THREE.FrontSide, roughness: 0.9 });
+            // ★修正: color: 0xffffffを明示
+            ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilTex, color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });
         } else {
             ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.FrontSide, roughness: 0.9 });
         }
