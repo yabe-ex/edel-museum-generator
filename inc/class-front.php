@@ -26,6 +26,7 @@ class EdelMuseumGeneratorFront {
             'txt_error' => __('Error', 'edel-museum-generator'),
             'txt_reset' => __('Reset', 'edel-museum-generator'),
             'txt_confirm_reset' => __('Are you sure you want to reset layout?', 'edel-museum-generator'),
+            'txt_rotate_label' => __('Rotate:', 'edel-museum-generator'),
             // Editor Labels
             'txt_move_t'   => __('Move (T)', 'edel-museum-generator'),
             'txt_rotate_r' => __('Rotate (R)', 'edel-museum-generator'),
@@ -239,7 +240,7 @@ class EdelMuseumGeneratorFront {
                 <div style="background: #333; color: #fff; padding: 10px; display:flex; gap:15px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div id="museum-scale-wrapper" style="display:none; align-items:center; gap:8px; background:#444; padding:2px 8px; border-radius:4px;">
-                            <label for="scale-slider" style="font-size:13px;"><?php _e('Scale:', 'edel-museum-generator'); ?></label>
+                            <label for="scale-slider" style="font-size:13px; color:#fff; white-space:nowrap;"><?php _e('Scale:', 'edel-museum-generator'); ?></label>
                             <input type="range" id="scale-slider" min="0.1" max="3.0" step="0.1" value="1.0">
                             <span id="scale-value" style="font-size:12px; min-width:30px;">1.0x</span>
                         </div>

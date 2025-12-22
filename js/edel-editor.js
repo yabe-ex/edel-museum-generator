@@ -185,7 +185,8 @@ jQuery(document).ready(function ($) {
         borderRadius: '4px',
         marginLeft: '10px'
     });
-    var $rotateLabel = $('<label>').css({ fontSize: '13px', color: '#fff' }).text('Rotate:');
+    // var $rotateLabel = $('<label>').css({ fontSize: '13px', color: '#fff' }).text('RotateA:');
+    var $rotateLabel = $('<label>').css({ fontSize: '13px', color: '#fff', whiteSpace: 'nowrap' }).text(edel_vars.txt_rotate_label);
     var $rotateSlider = $('<input>').attr({ type: 'range', id: 'rotate-slider', min: '-180', max: '180', step: '15', value: '0' });
     var $rotateValue = $('<span>').attr('id', 'rotate-value').css({ fontSize: '12px', minWidth: '35px', color: '#fff' }).text('0°');
     $rotateWrapper.append($rotateLabel).append($rotateSlider).append($rotateValue);
