@@ -12,9 +12,9 @@ class EdelMuseumGeneratorFront {
         $is_edit_mode = isset($_GET['museum_edit']) && $_GET['museum_edit'] === '1';
         $version = (defined('EDEL_MUSEUM_GENERATOR_DEVELOP') && true === EDEL_MUSEUM_GENERATOR_DEVELOP) ? time() : EDEL_MUSEUM_GENERATOR_VERSION;
 
-        wp_enqueue_script('three', 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js', array(), '0.128.0', true);
-        wp_enqueue_script('three-gltf-loader', 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js', array('three'), '0.128.0', true);
-        wp_enqueue_script('nipplejs', 'https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipple.min.js', array(), '0.10.1', true);
+        wp_enqueue_script('three', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/three.min.js', array(), '0.128.0', true);
+        wp_enqueue_script('three-gltf-loader', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/GLTFLoader.js', array('three'), '0.128.0', true);
+        wp_enqueue_script('nipplejs', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/nipplejs.min.js', array(), '0.10.1', true);
 
         // ★修正: JS用翻訳テキストを追加
         $localize_data = array(
@@ -46,13 +46,13 @@ class EdelMuseumGeneratorFront {
         );
 
         if ($is_edit_mode) {
-            wp_enqueue_script('three-orbitcontrols', 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js', array('three'), '0.128.0', true);
-            wp_enqueue_script('three-transformcontrols', 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js', array('three'), '0.128.0', true);
+            wp_enqueue_script('three-orbitcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/OrbitControls.js', array('three'), '0.128.0', true);
+            wp_enqueue_script('three-transformcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/TransformControls.js', array('three'), '0.128.0', true);
 
             wp_enqueue_script(EDEL_MUSEUM_GENERATOR_SLUG . '-editor', EDEL_MUSEUM_GENERATOR_URL . '/js/edel-editor.js', array('jquery', 'three', 'three-orbitcontrols', 'three-transformcontrols', 'three-gltf-loader'), $version, true);
             wp_localize_script(EDEL_MUSEUM_GENERATOR_SLUG . '-editor', 'edel_vars', $localize_data);
         } else {
-            wp_enqueue_script('three-pointerlockcontrols', 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js', array('three'), '0.128.0', true);
+            wp_enqueue_script('three-pointerlockcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/PointerLockControls.js', array('three'), '0.128.0', true);
 
             wp_enqueue_script(EDEL_MUSEUM_GENERATOR_SLUG . '-viewer', EDEL_MUSEUM_GENERATOR_URL . '/js/edel-viewer.js', array('jquery', 'three', 'three-pointerlockcontrols', 'three-gltf-loader', 'nipplejs'), $version, true);
             wp_localize_script(EDEL_MUSEUM_GENERATOR_SLUG . '-viewer', 'edel_vars', $localize_data);
