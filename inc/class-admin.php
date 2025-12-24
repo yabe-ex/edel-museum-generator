@@ -39,12 +39,12 @@ class EdelMuseumGeneratorAdmin {
     public function render_help_page() {
 ?>
         <div class="wrap">
-            <h1><?php _e('Edel Museum Generator - Usage Guide', 'edel-museum-generator'); ?></h1>
+            <h1><?php esc_html_e('Edel Museum Generator - Usage Guide', 'edel-museum-generator'); ?></h1>
 
             <div style="max-width: 1000px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 20px;">
 
                 <div style="margin-bottom: 30px; padding: 15px; background: #e5f5fa; border-left: 4px solid #2271b1;">
-                    <strong><?php _e('For more detailed instructions and tutorials, please visit:', 'edel-museum-generator'); ?></strong><br>
+                    <strong><?php esc_html_e('For more detailed instructions and tutorials, please visit:', 'edel-museum-generator'); ?></strong><br>
                     <a href="https://edel-hearts.com/edel-museum-generator-usage" target="_blank" style="font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 5px;">
                         https://edel-hearts.com/edel-museum-generator-usage <span class="dashicons dashicons-external" style="font-size:18px; vertical-align: bottom;"></span>
                     </a>
@@ -52,51 +52,51 @@ class EdelMuseumGeneratorAdmin {
 
                 <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px;">
                     <span class="dashicons dashicons-art" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
-                    <?php _e('Step 1: Add Artworks', 'edel-museum-generator'); ?>
+                    <?php esc_html_e('Step 1: Add Artworks', 'edel-museum-generator'); ?>
                 </h2>
-                <p><?php _e('Register the 2D artworks (paintings/photos) you want to display.', 'edel-museum-generator'); ?></p>
+                <p><?php esc_html_e('Register the 2D artworks (paintings/photos) you want to display.', 'edel-museum-generator'); ?></p>
                 <ol style="margin-left: 20px; line-height: 1.8;">
-                    <li><?php _e('Go to <strong>Museum Artworks > Add New Artwork</strong>.', 'edel-museum-generator'); ?></li>
-                    <li><?php _e('Enter the <strong>Title</strong> and <strong>Description</strong>.', 'edel-museum-generator'); ?></li>
+                    <li><?php echo wp_kses_post(__('Go to <strong>Museum Artworks > Add New Artwork</strong>.', 'edel-museum-generator')); ?></li>
+                    <li><?php echo wp_kses_post(__('Enter the <strong>Title</strong> and <strong>Description</strong>.', 'edel-museum-generator')); ?></li>
                     <li>
-                        <strong><?php _e('Set Featured Image:', 'edel-museum-generator'); ?></strong><br>
-                        <?php _e('Upload the image you want to display on the wall using the "Featured Image" box in the right sidebar.', 'edel-museum-generator'); ?>
+                        <strong><?php esc_html_e('Set Featured Image:', 'edel-museum-generator'); ?></strong><br>
+                        <?php esc_html_e('Upload the image you want to display on the wall using the "Featured Image" box in the right sidebar.', 'edel-museum-generator'); ?>
                     </li>
                 </ol>
 
                 <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px; margin-top: 40px;">
                     <span class="dashicons dashicons-building" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
-                    <?php _e('Step 2: Create Exhibition Room', 'edel-museum-generator'); ?>
+                    <?php esc_html_e('Step 2: Create Exhibition Room', 'edel-museum-generator'); ?>
                 </h2>
-                <p><?php _e('Configure the room and place your artworks on the walls.', 'edel-museum-generator'); ?></p>
+                <p><?php esc_html_e('Configure the room and place your artworks on the walls.', 'edel-museum-generator'); ?></p>
                 <ol style="margin-left: 20px; line-height: 1.8;">
-                    <li><?php _e('Go to <strong>Exhibition Settings > Add New Exhibition</strong>.', 'edel-museum-generator'); ?></li>
-                    <li><strong><?php _e('Textures:', 'edel-museum-generator'); ?></strong> <?php _e('Select images for Floor, Wall, and Ceiling.', 'edel-museum-generator'); ?></li>
-                    <li><strong><?php _e('Placement:', 'edel-museum-generator'); ?></strong>
-                        <?php _e('Click the <strong>"Select"</strong> button next to each wall (North, South, East, West) to choose artworks from your library.', 'edel-museum-generator'); ?>
+                    <li><?php echo wp_kses_post(__('Go to <strong>Exhibition Settings > Add New Exhibition</strong>.', 'edel-museum-generator')); ?></li>
+                    <li><strong><?php esc_html_e('Textures:', 'edel-museum-generator'); ?></strong> <?php esc_html_e('Select images for Floor, Wall, and Ceiling.', 'edel-museum-generator'); ?></li>
+                    <li><strong><?php esc_html_e('Placement:', 'edel-museum-generator'); ?></strong>
+                        <?php echo wp_kses_post(__('Click the <strong>"Select"</strong> button next to each wall (North, South, East, West) to choose artworks from your library.', 'edel-museum-generator')); ?>
                     </li>
-                    <li><strong><?php _e('Settings:', 'edel-museum-generator'); ?></strong> <?php _e('Adjust Brightness and <strong>Movement Speed</strong>.', 'edel-museum-generator'); ?></li>
+                    <li><strong><?php esc_html_e('Settings:', 'edel-museum-generator'); ?></strong> <?php echo wp_kses_post(__('Adjust Brightness and <strong>Movement Speed</strong>.', 'edel-museum-generator')); ?></li>
                 </ol>
 
                 <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px; margin-top: 40px;">
                     <span class="dashicons dashicons-move" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
-                    <?php _e('Step 3: 3D Layout Editor', 'edel-museum-generator'); ?>
+                    <?php esc_html_e('Step 3: 3D Layout Editor', 'edel-museum-generator'); ?>
                 </h2>
-                <p><?php _e('Adjust the layout in 3D space.', 'edel-museum-generator'); ?></p>
+                <p><?php esc_html_e('Adjust the layout in 3D space.', 'edel-museum-generator'); ?></p>
                 <div style="background: #f0f0f1; padding: 15px; border-left: 4px solid #2271b1;">
-                    <strong><span class="dashicons dashicons-lightbulb"></span> <?php _e('Tip:', 'edel-museum-generator'); ?></strong> <?php _e('You must <strong>Publish/Update</strong> the post first to generate the preview.', 'edel-museum-generator'); ?>
+                    <strong><span class="dashicons dashicons-lightbulb"></span> <?php esc_html_e('Tip:', 'edel-museum-generator'); ?></strong> <?php echo wp_kses_post(__('You must <strong>Publish/Update</strong> the post first to generate the preview.', 'edel-museum-generator')); ?>
                 </div>
                 <ol style="margin-left: 20px; line-height: 1.8; margin-top: 15px;">
-                    <li><?php _e('View the Exhibition post on the front-end.', 'edel-museum-generator'); ?></li>
-                    <li><?php _e('Click <strong>"Switch to Editor"</strong>.', 'edel-museum-generator'); ?></li>
-                    <li><strong><?php _e('Select & Move:', 'edel-museum-generator'); ?></strong> <?php _e('Click an artwork and use the arrows to move it.', 'edel-museum-generator'); ?></li>
-                    <li><strong><?php _e('Scale:', 'edel-museum-generator'); ?></strong> <?php _e('Use the slider to resize the artwork.', 'edel-museum-generator'); ?></li>
-                    <li><?php _e('Click <strong>"Save Layout"</strong>.', 'edel-museum-generator'); ?></li>
+                    <li><?php echo wp_kses_post(__('View the Exhibition post on the front-end.', 'edel-museum-generator')); ?></li>
+                    <li><?php echo wp_kses_post(__('Click <strong>"Switch to Editor"</strong>.', 'edel-museum-generator')); ?></li>
+                    <li><strong><?php esc_html_e('Select & Move:', 'edel-museum-generator'); ?></strong> <?php esc_html_e('Click an artwork and use the arrows to move it.', 'edel-museum-generator'); ?></li>
+                    <li><strong><?php esc_html_e('Scale:', 'edel-museum-generator'); ?></strong> <?php esc_html_e('Use the slider to resize the artwork.', 'edel-museum-generator'); ?></li>
+                    <li><?php echo wp_kses_post(__('Click <strong>"Save Layout"</strong>.', 'edel-museum-generator')); ?></li>
                 </ol>
 
                 <h2 style="border-bottom: 2px solid #2271b1; padding-bottom: 10px; margin-bottom: 20px; margin-top: 40px;">
                     <span class="dashicons dashicons-shortcode" style="font-size:24px;width:24px;height:24px;margin-right:5px;"></span>
-                    <?php _e('Step 4: Display', 'edel-museum-generator'); ?>
+                    <?php esc_html_e('Step 4: Display', 'edel-museum-generator'); ?>
                 </h2>
                 <code style="background: #e5e5e5; padding: 10px; display: block; margin: 10px 0; font-size: 16px;">
                     [edel_museum id="123"]
@@ -104,7 +104,7 @@ class EdelMuseumGeneratorAdmin {
 
                 <hr style="margin: 40px 0;">
                 <p style="text-align: right; color: #888;">
-                    Edel Museum Generator Lite v<?php echo EDEL_MUSEUM_GENERATOR_VERSION; ?>
+                    Edel Museum Generator Lite v<?php echo esc_html(EDEL_MUSEUM_GENERATOR_VERSION); ?>
                 </p>
             </div>
         </div>
@@ -133,18 +133,18 @@ class EdelMuseumGeneratorAdmin {
     public function render_shortcode_after_title($post) {
         if ($post->post_type !== 'edel_exhibition') return;
         if ($post->post_status === 'auto-draft') {
-            echo '<div style="margin-top:10px; color:#666;">' . __('Save draft to generate shortcode.', 'edel-museum-generator') . '</div>';
+            echo '<div style="margin-top:10px; color:#666;">' . esc_html__('Save draft to generate shortcode.', 'edel-museum-generator') . '</div>';
             return;
         }
         $shortcode = '[edel_museum id="' . $post->ID . '"]';
     ?>
         <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; background: #fff; padding: 10px; border: 1px solid #ccd0d4; border-left: 4px solid #2271b1; box-shadow: 0 1px 1px rgba(0,0,0,0.04);">
-            <strong style="font-size:13px;"><?php _e('Shortcode:', 'edel-museum-generator'); ?></strong>
+            <strong style="font-size:13px;"><?php esc_html_e('Shortcode:', 'edel-museum-generator'); ?></strong>
             <input type="text" id="edel-top-shortcode" value="<?php echo esc_attr($shortcode); ?>" readonly style="background:#f9f9f9; border:1px solid #ddd; width:200px; font-family:monospace;" onclick="this.select();">
             <button type="button" class="button edel-copy-btn" data-code="<?php echo esc_attr($shortcode); ?>">
-                <?php _e('Copy to Clipboard', 'edel-museum-generator'); ?>
+                <?php esc_html_e('Copy to Clipboard', 'edel-museum-generator'); ?>
             </button>
-            <span id="edel-copy-msg" style="color:green; display:none; font-weight:bold; font-size:12px;"><?php _e('Copied!', 'edel-museum-generator'); ?></span>
+            <span id="edel-copy-msg" style="color:green; display:none; font-weight:bold; font-size:12px;"><?php esc_html_e('Copied!', 'edel-museum-generator'); ?></span>
         </div>
         <?php
     }
@@ -390,18 +390,18 @@ class EdelMuseumGeneratorAdmin {
             }
         </style>
 
-        <div class="edel-section-title"><?php _e('Lighting & Movement', 'edel-museum-generator'); ?></div>
+        <div class="edel-section-title"><?php esc_html_e('Lighting & Movement', 'edel-museum-generator'); ?></div>
         <table class="edel-meta-table">
             <tr>
-                <th><?php _e('Room Brightness', 'edel-museum-generator'); ?></th>
+                <th><?php esc_html_e('Room Brightness', 'edel-museum-generator'); ?></th>
                 <td><input type="number" name="edel_room[room_brightness]" value="<?php echo esc_attr($meta['room_brightness']); ?>" step="0.1" min="0" max="2.5"></td>
             </tr>
             <tr>
-                <th><?php _e('Spotlight Brightness', 'edel-museum-generator'); ?></th>
+                <th><?php esc_html_e('Spotlight Brightness', 'edel-museum-generator'); ?></th>
                 <td><input type="number" name="edel_room[spot_brightness]" value="<?php echo esc_attr($meta['spot_brightness']); ?>" step="0.1" min="0" max="2.5"></td>
             </tr>
             <tr>
-                <th><?php _e('Movement Speed', 'edel-museum-generator'); ?></th>
+                <th><?php esc_html_e('Movement Speed', 'edel-museum-generator'); ?></th>
                 <td>
                     <input type="number" name="edel_room[movement_speed]" value="<?php echo esc_attr($meta['movement_speed']); ?>" step="1.0" min="1.0" max="50.0">
                     <p class="description" style="font-size:11px;">Default: 20.0 (Range: 1.0 - 50.0)</p>
@@ -409,7 +409,7 @@ class EdelMuseumGeneratorAdmin {
             </tr>
         </table>
 
-        <div class="edel-section-title"><?php _e('Textures (Image URL)', 'edel-museum-generator'); ?></div>
+        <div class="edel-section-title"><?php esc_html_e('Textures (Image URL)', 'edel-museum-generator'); ?></div>
         <table class="edel-meta-table">
             <?php
             $textures = array(
@@ -423,15 +423,15 @@ class EdelMuseumGeneratorAdmin {
                     <th><?php echo esc_html($label); ?></th>
                     <td>
                         <div style="display:flex;">
-                            <input type="text" id="edel_room_<?php echo $key; ?>" name="edel_room[<?php echo $key; ?>]" value="<?php echo esc_attr($meta[$key]); ?>">
-                            <button type="button" class="button edel-upload-texture" data-target="edel_room_<?php echo $key; ?>"><?php _e('Select Image', 'edel-museum-generator'); ?></button>
+                            <input type="text" id="edel_room_<?php echo esc_attr($key); ?>" name="edel_room[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($meta[$key]); ?>">
+                            <button type="button" class="button edel-upload-texture" data-target="edel_room_<?php echo esc_attr($key); ?>"><?php esc_html_e('Select Image', 'edel-museum-generator'); ?></button>
                         </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
         </table>
 
-        <div class="edel-section-title"><?php _e('Wall Placement (Images)', 'edel-museum-generator'); ?></div>
+        <div class="edel-section-title"><?php esc_html_e('Wall Placement (Images)', 'edel-museum-generator'); ?></div>
         <table class="edel-meta-table">
             <?php
             $walls = array('north' => __('North Wall', 'edel-museum-generator'), 'south' => __('South Wall', 'edel-museum-generator'), 'east' => __('East Wall', 'edel-museum-generator'), 'west' => __('West Wall', 'edel-museum-generator'));
@@ -441,8 +441,8 @@ class EdelMuseumGeneratorAdmin {
                     <th><?php echo esc_html($label); ?></th>
                     <td>
                         <div style="display:flex;">
-                            <input type="text" id="edel_room_<?php echo $key; ?>" class="edel-placement-input" name="edel_room[<?php echo $key; ?>]" value="<?php echo esc_attr($meta[$key]); ?>">
-                            <button type="button" class="button edel-open-picker" data-target="edel_room_<?php echo $key; ?>"><?php _e('Select', 'edel-museum-generator'); ?></button>
+                            <input type="text" id="edel_room_<?php echo esc_attr($key); ?>" class="edel-placement-input" name="edel_room[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($meta[$key]); ?>">
+                            <button type="button" class="button edel-open-picker" data-target="edel_room_<?php echo esc_attr($key); ?>"><?php esc_html_e('Select', 'edel-museum-generator'); ?></button>
                         </div>
                     </td>
                 </tr>
@@ -452,8 +452,8 @@ class EdelMuseumGeneratorAdmin {
         <div id="edel-art-picker-modal">
             <div id="edel-picker-content">
                 <div id="edel-picker-header">
-                    <h3 id="edel-picker-title"><?php _e('Select Artworks', 'edel-museum-generator'); ?></h3>
-                    <button type="button" id="edel-picker-close" class="button"><?php _e('Close', 'edel-museum-generator'); ?></button>
+                    <h3 id="edel-picker-title"><?php esc_html_e('Select Artworks', 'edel-museum-generator'); ?></h3>
+                    <button type="button" id="edel-picker-close" class="button"><?php esc_html_e('Close', 'edel-museum-generator'); ?></button>
                 </div>
                 <div id="edel-picker-body">
                     <?php if ($artworks): foreach ($artworks as $art):
@@ -461,15 +461,15 @@ class EdelMuseumGeneratorAdmin {
                             $has_img = $img_url ? '1' : '0';
                     ?>
                             <div class="edel-art-item"
-                                data-id="<?php echo $art->ID; ?>"
-                                data-has-img="<?php echo $has_img; ?>">
-                                <?php if ($img_url): ?><img src="<?php echo $img_url; ?>" class="edel-art-thumb"><?php else: ?><div class="edel-art-thumb" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;">No Image</div><?php endif; ?>
+                                data-id="<?php echo esc_attr($art->ID); ?>"
+                                data-has-img="<?php echo esc_attr($has_img); ?>">
+                                <?php if ($img_url): ?><img src="<?php echo esc_url($img_url); ?>" class="edel-art-thumb"><?php else: ?><div class="edel-art-thumb" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;">No Image</div><?php endif; ?>
                                 <div class="edel-art-title"><?php echo esc_html($art->post_title); ?></div>
-                                <div style="font-size:10px;color:#888;">ID: <?php echo $art->ID; ?></div>
+                                <div style="font-size:10px;color:#888;">ID: <?php echo esc_html($art->ID); ?></div>
                             </div>
                         <?php endforeach;
                     else: ?>
-                        <p style="padding:20px;"><?php _e('No artworks found.', 'edel-museum-generator'); ?></p>
+                        <p style="padding:20px;"><?php esc_html_e('No artworks found.', 'edel-museum-generator'); ?></p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -574,14 +574,22 @@ class EdelMuseumGeneratorAdmin {
     }
 
     public function save_meta_fields($post_id) {
-        if (!isset($_POST['edel_museum_meta_nonce']) || !wp_verify_nonce($_POST['edel_museum_meta_nonce'], 'edel_museum_meta_save')) return;
+        // ★修正: MissingUnslash対策。Nonceに対しても wp_unslash を挟んでから sanitize_key する
+        $nonce = isset($_POST['edel_museum_meta_nonce']) ? sanitize_key(wp_unslash($_POST['edel_museum_meta_nonce'])) : '';
+        if (!wp_verify_nonce($nonce, 'edel_museum_meta_save')) return;
+
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
         if (!current_user_can('edit_post', $post_id)) return;
 
         if (isset($_POST['edel_room'])) {
             $clean_data = array();
-            foreach ($_POST['edel_room'] as $k => $v) {
-                $clean_data[$k] = sanitize_text_field($v);
+            // ★修正: 配列全体を wp_unslash でスラッシュ除去
+            $edel_room_raw = wp_unslash($_POST['edel_room']);
+
+            if (is_array($edel_room_raw)) {
+                foreach ($edel_room_raw as $k => $v) {
+                    $clean_data[$k] = sanitize_text_field($v);
+                }
             }
             update_post_meta($post_id, '_edel_exhibition_data', $clean_data);
 
@@ -700,17 +708,42 @@ class EdelMuseumGeneratorAdmin {
 
     public function ajax_save_layout() {
         if (!current_user_can('edit_posts')) wp_send_json_error(array('message' => __('Permission denied', 'edel-museum-generator')));
-        check_ajax_referer('edel-museum-generator', '_nonce'); // 注意: 互換性のためPro版のNonce名を使う場合が多いですが、Lite版として分けるならここも変えるべきです。前回のPro版を踏襲してProのSlugになっていますが、Lite版として完全に分離するなら 'edel-museum-generator' にすべきです。ここではLite版のSlugに合わせて修正します。
-        // ★修正: Lite版のSlugを使用
         check_ajax_referer(EDEL_MUSEUM_GENERATOR_SLUG, '_nonce');
 
         $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
-        $layout  = isset($_POST['layout'])  ? wp_unslash($_POST['layout']) : '';
 
-        if (!$post_id || !$layout) wp_send_json_error(array('message' => __('Missing data', 'edel-museum-generator')));
+        // ★修正: Unslashしてからデコード。警告が出てもこの手順が正しい処理です。
+        $layout_raw = isset($_POST['layout']) ? wp_unslash($_POST['layout']) : '';
 
-        update_post_meta($post_id, '_edel_museum_layout', wp_slash($layout));
-        wp_send_json_success(array('message' => __('Saved successfully!', 'edel-museum-generator')));
+        if (!$post_id || !$layout_raw) wp_send_json_error(array('message' => __('Missing data', 'edel-museum-generator')));
+
+        $layout_json = json_decode($layout_raw, true);
+        if ($layout_json && is_array($layout_json)) {
+            $layout_clean = $this->sanitize_layout_recursive($layout_json);
+            // データを安全なJSONとして再エンコード
+            $layout = wp_json_encode($layout_clean, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            update_post_meta($post_id, '_edel_museum_layout', wp_slash($layout));
+            wp_send_json_success(array('message' => __('Saved successfully!', 'edel-museum-generator')));
+        } else {
+            wp_send_json_error(array('message' => __('Invalid data', 'edel-museum-generator')));
+        }
+    }
+
+    // レイアウトデータの再帰的サニタイズ関数
+    private function sanitize_layout_recursive($data) {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->sanitize_layout_recursive($value);
+            }
+            return $data;
+        } elseif (is_string($data)) {
+            return sanitize_text_field($data);
+        } elseif (is_numeric($data)) {
+            return $data; // 数値はそのまま保持
+        } elseif (is_bool($data)) {
+            return $data;
+        }
+        return ''; // その他は空文字
     }
 
     public function ajax_clear_layout() {

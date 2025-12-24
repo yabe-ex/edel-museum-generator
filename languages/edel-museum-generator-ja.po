@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Edel Museum Generator\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-12 14:36+0000\n"
-"PO-Revision-Date: 2025-12-22 21:27+0000\n"
+"PO-Revision-Date: 2025-12-24 00:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: 日本語\n"
 "Language: ja\n"
@@ -31,7 +31,7 @@ msgstr "明るさと<strong>移動速度</strong>を調整します。"
 msgid "Adjust the layout in 3D space."
 msgstr "3D空間でレイアウトを調整します。"
 
-#: inc/class-front.php:28
+#: inc/class-front.php:32
 msgid "Are you sure you want to reset layout?"
 msgstr "本当に配置をリセットしますか？"
 
@@ -39,7 +39,7 @@ msgstr "本当に配置をリセットしますか？"
 msgid "Artwork"
 msgstr "作品"
 
-#: inc/class-front.php:204
+#: inc/class-front.php:211
 msgid "Back to Viewer"
 msgstr "閲覧モードに戻る"
 
@@ -73,7 +73,7 @@ msgstr "閉じる"
 msgid "Configure the room and place your artworks on the walls."
 msgstr "部屋を設定し、壁に作品を配置します。"
 
-#: inc/class-front.php:35
+#: inc/class-front.php:39
 msgid "Controls"
 msgstr "操作方法"
 
@@ -89,7 +89,7 @@ msgstr "クリップボードにコピー"
 msgid "Create a 3D virtual museum easily."
 msgstr "3Dのバーチャル展示室を簡単に作成します。"
 
-#: inc/class-front.php:39
+#: inc/class-front.php:43
 msgid "Cursor:"
 msgstr "カーソル:"
 
@@ -123,19 +123,19 @@ msgstr "展示室を編集"
 msgid "Enter the <strong>Title</strong> and <strong>Description</strong>."
 msgstr "<strong>タイトル</strong>と<strong>説明</strong>を入力します。"
 
-#: inc/class-front.php:26
+#: inc/class-front.php:30
 msgid "Error"
 msgstr "エラー"
 
-#: inc/class-front.php:197
+#: inc/class-front.php:201
 msgid "Error: Data not found."
 msgstr "エラー: データが見つかりません。"
 
-#: inc/class-front.php:157
+#: inc/class-front.php:161
 msgid "Error: Please specify Exhibition ID."
 msgstr "エラー: 展示室IDを指定してください。"
 
-#: inc/class-front.php:40
+#: inc/class-front.php:44
 msgid "ESC (Back / Unlock)"
 msgstr "ESC (戻る / 解除)"
 
@@ -163,7 +163,7 @@ msgstr "<strong>Exhibition Settings > Add New Exhibition</strong> に移動し�
 msgid "Go to <strong>Museum Artworks > Add New Artwork</strong>."
 msgstr "<strong>Museum Artworks > Add New Artwork</strong> に移動します。"
 
-#: inc/class-front.php:37
+#: inc/class-front.php:41
 msgid "Height:"
 msgstr "高さ:"
 
@@ -171,31 +171,35 @@ msgstr "高さ:"
 msgid "https://edel-hearts.com"
 msgstr "https://edel-hearts.com"
 
+#: inc/class-admin.php:728
+msgid "Invalid data"
+msgstr "無効なデータ"
+
 #: inc/class-admin.php:393
 msgid "Lighting & Movement"
 msgstr "照明と移動設定"
 
-#: inc/class-front.php:33
+#: inc/class-front.php:37
 msgid "Loading Assets..."
 msgstr "アセットを読み込み中..."
 
-#: inc/class-front.php:45
+#: inc/class-front.php:49
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: inc/class-front.php:38
+#: inc/class-front.php:42
 msgid "Look:"
 msgstr "視点:"
 
-#: inc/class-admin.php:710 inc/class-admin.php:721
+#: inc/class-admin.php:718 inc/class-admin.php:754
 msgid "Missing data"
 msgstr "データが不足しています"
 
-#: inc/class-front.php:31
+#: inc/class-front.php:35
 msgid "Move (T)"
 msgstr "移動 (T)"
 
-#: inc/class-front.php:36
+#: inc/class-front.php:40
 msgid "Move:"
 msgstr "移動:"
 
@@ -215,7 +219,7 @@ msgstr "作品が見つかりませんでした。"
 msgid "North Wall"
 msgstr "北側の壁"
 
-#: inc/class-admin.php:702 inc/class-admin.php:717
+#: inc/class-admin.php:710 inc/class-admin.php:750
 msgid "Permission denied"
 msgstr "権限がありません"
 
@@ -227,19 +231,19 @@ msgstr "配置:"
 msgid "Register the 2D artworks (paintings/photos) you want to display."
 msgstr "展示したい2D作品（絵画/写真）を登録します。"
 
-#: inc/class-front.php:27
+#: inc/class-front.php:31
 msgid "Reset"
 msgstr "リセット"
 
-#: inc/class-front.php:249
+#: inc/class-front.php:256
 msgid "Reset Layout"
 msgstr "配置リセット"
 
-#: inc/class-admin.php:724
+#: inc/class-admin.php:757
 msgid "Reset to default layout."
 msgstr "初期配置に戻しました。"
 
-#: inc/class-front.php:42
+#: inc/class-front.php:46
 msgid "Room"
 msgstr "部屋"
 
@@ -251,11 +255,11 @@ msgstr "部屋の明るさ"
 msgid "Room Settings & Artwork Placement"
 msgstr "ルーム設定 & 作品配置"
 
-#: inc/class-front.php:32
+#: inc/class-front.php:36
 msgid "Rotate (R)"
 msgstr "回転 (R)"
 
-#: inc/class-front.php:29
+#: inc/class-front.php:33
 msgid "Rotate:"
 msgstr "回転:"
 
@@ -263,19 +267,19 @@ msgstr "回転:"
 msgid "Save draft to generate shortcode."
 msgstr "下書きを保存するとショートコードが生成されます。"
 
-#: inc/class-front.php:250
+#: inc/class-front.php:257
 msgid "Save Layout"
 msgstr "レイアウトを保存"
 
-#: inc/class-admin.php:713
+#: inc/class-admin.php:726
 msgid "Saved successfully!"
 msgstr "保存しました！"
 
-#: inc/class-front.php:25
+#: inc/class-front.php:29
 msgid "Saved!"
 msgstr "保存しました！"
 
-#: inc/class-front.php:243 inc/class-admin.php:93
+#: inc/class-front.php:250 inc/class-admin.php:93
 msgid "Scale:"
 msgstr "サイズ:"
 
@@ -323,7 +327,7 @@ msgstr "ショートコード:"
 msgid "South Wall"
 msgstr "南側の壁"
 
-#: inc/class-front.php:43
+#: inc/class-front.php:47
 msgid "Spotlight"
 msgstr "Spotlight"
 
@@ -347,7 +351,7 @@ msgstr "ステップ 3: 3Dレイアウトエディタ"
 msgid "Step 4: Display"
 msgstr "ステップ 4: 表示"
 
-#: inc/class-front.php:204
+#: inc/class-front.php:211
 msgid "Switch to Editor"
 msgstr "編集モードに切り替え"
 
@@ -369,7 +373,7 @@ msgid ""
 "Image\" box in the right sidebar."
 msgstr "右サイドバーの「アイキャッチ画像」ボックスを使用して、壁に飾りたい画像をアップロードします。"
 
-#: edel-museum-generator.php:47 inc/class-admin.php:31 inc/class-admin.php:32
+#: edel-museum-generator.php:40 inc/class-admin.php:31 inc/class-admin.php:32
 msgid "Usage Guide"
 msgstr "使い方ガイド"
 
@@ -381,7 +385,7 @@ msgstr "スライダーを使用して作品のサイズを変更します。"
 msgid "Use this image"
 msgstr "この画像を使用"
 
-#: inc/class-front.php:44
+#: inc/class-front.php:48
 msgid "View Details"
 msgstr "詳細を見る"
 

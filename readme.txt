@@ -1,6 +1,6 @@
 === Edel Museum Generator ===
-Contributors: yabea
-Tags: 3d, gallery, museum, virtual tour, three.js, portfolio
+Contributors: edelhearts
+Tags: 3d, gallery, museum, three.js, portfolio
 Requires at least: 5.8
 Tested up to: 6.9
 Stable tag: 1.2.0
@@ -67,6 +67,9 @@ The Lite version allows you to display art. To add "Buy Now" links directly to t
 == Changelog ==
 
 = 1.2.0 =
+* Bug fixed.
+
+= 1.1.0 =
 * Update: Full internationalization (i18n) support.
 * Feature: Added "Copy Shortcode" button to the admin list and edit screen.
 * Improvement: Improved Viewer UI (Help and Settings toggle).

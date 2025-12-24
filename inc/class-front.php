@@ -9,14 +9,18 @@ class EdelMuseumGeneratorFront {
     }
 
     public function front_enqueue() {
-        $is_edit_mode = isset($_GET['museum_edit']) && $_GET['museum_edit'] === '1';
+        // ★修正: $_GETを直接触らず filter_input を使用（Nonce警告対策・コード品質向上）
+        // 表示切り替えのみの機能であり、セキュリティリスクはないためNonce検証は省略します。
+        $edit_mode_val = filter_input(INPUT_GET, 'museum_edit', FILTER_VALIDATE_BOOLEAN);
+        $is_edit_mode = ($edit_mode_val === true || $edit_mode_val === 1);
+
         $version = (defined('EDEL_MUSEUM_GENERATOR_DEVELOP') && true === EDEL_MUSEUM_GENERATOR_DEVELOP) ? time() : EDEL_MUSEUM_GENERATOR_VERSION;
 
         wp_enqueue_script('three', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/three.min.js', array(), '0.128.0', true);
         wp_enqueue_script('three-gltf-loader', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/GLTFLoader.js', array('three'), '0.128.0', true);
         wp_enqueue_script('nipplejs', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/nipplejs.min.js', array(), '0.10.1', true);
 
-        // ★修正: JS用翻訳テキストを追加
+        // JS用翻訳テキスト
         $localize_data = array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce'   => wp_create_nonce(EDEL_MUSEUM_GENERATOR_SLUG),
@@ -41,7 +45,7 @@ class EdelMuseumGeneratorFront {
             // Viewer Settings
             'txt_room'      => __('Room', 'edel-museum-generator'),
             'txt_spotlight' => __('Spotlight', 'edel-museum-generator'),
-            'txt_view_details' => __('View Details', 'edel-museum-generator'), // Lite版では未使用ですが統一のため保持
+            'txt_view_details' => __('View Details', 'edel-museum-generator'),
             'txt_loading' => __('Loading...', 'edel-museum-generator')
         );
 
@@ -68,7 +72,7 @@ class EdelMuseumGeneratorFront {
         $room_w = 16;
         $room_h = 4;
         $room_d = 16;
-        $num_pillars = 0; // Lite: 柱なし
+        $num_pillars = 0;
         $pillars_data = array();
 
         $layout = array(
@@ -154,7 +158,7 @@ class EdelMuseumGeneratorFront {
         $atts = shortcode_atts(array('id' => 0), $atts);
         $exhibition_id = intval($atts['id']);
 
-        if (!$exhibition_id) return '<p>' . __('Error: Please specify Exhibition ID.', 'edel-museum-generator') . '</p>';
+        if (!$exhibition_id) return '<p>' . esc_html__('Error: Please specify Exhibition ID.', 'edel-museum-generator') . '</p>';
 
         $saved_json = get_post_meta($exhibition_id, '_edel_museum_layout', true);
         $layout = null;
@@ -194,11 +198,14 @@ class EdelMuseumGeneratorFront {
             }
         }
 
-        if (!$layout) return '<p>' . __('Error: Data not found.', 'edel-museum-generator') . '</p>';
+        if (!$layout) return '<p>' . esc_html__('Error: Data not found.', 'edel-museum-generator') . '</p>';
 
         $json_encoded = rawurlencode(wp_json_encode($layout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
-        $is_edit_mode = isset($_GET['museum_edit']) && $_GET['museum_edit'] === '1';
+        // ★修正: ここも filter_input を使用
+        $edit_mode_val = filter_input(INPUT_GET, 'museum_edit', FILTER_VALIDATE_BOOLEAN);
+        $is_edit_mode = ($edit_mode_val === true || $edit_mode_val === 1);
+
         $can_manage = current_user_can('edit_post', $exhibition_id);
         $toggle_url = $is_edit_mode ? remove_query_arg('museum_edit') : add_query_arg('museum_edit', '1');
         $toggle_text = $is_edit_mode ? __('Back to Viewer', 'edel-museum-generator') : __('Switch to Editor', 'edel-museum-generator');
@@ -240,20 +247,20 @@ class EdelMuseumGeneratorFront {
                 <div style="background: #333; color: #fff; padding: 10px; display:flex; gap:15px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div id="museum-scale-wrapper" style="display:none; align-items:center; gap:8px; background:#444; padding:2px 8px; border-radius:4px;">
-                            <label for="scale-slider" style="font-size:13px; color:#fff; white-space:nowrap;"><?php _e('Scale:', 'edel-museum-generator'); ?></label>
+                            <label for="scale-slider" style="font-size:13px; color:#fff; white-space:nowrap;"><?php esc_html_e('Scale:', 'edel-museum-generator'); ?></label>
                             <input type="range" id="scale-slider" min="0.1" max="3.0" step="0.1" value="1.0">
                             <span id="scale-value" style="font-size:12px; min-width:30px;">1.0x</span>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px;">
-                        <button type="button" id="museum-clear" class="button" style="color: #d63638; border-color: #d63638;"><?php _e('Reset Layout', 'edel-museum-generator'); ?></button>
-                        <button type="button" id="museum-save" class="button button-primary"><?php _e('Save Layout', 'edel-museum-generator'); ?></button>
+                        <button type="button" id="museum-clear" class="button" style="color: #d63638; border-color: #d63638;"><?php esc_html_e('Reset Layout', 'edel-museum-generator'); ?></button>
+                        <button type="button" id="museum-save" class="button button-primary"><?php esc_html_e('Save Layout', 'edel-museum-generator'); ?></button>
                     </div>
                 </div>
             <?php endif; ?>
         </div>
 
-        <input type="hidden" id="<?php echo esc_attr($data_id); ?>" value="<?php echo $json_encoded; ?>">
+        <input type="hidden" id="<?php echo esc_attr($data_id); ?>" value="<?php echo esc_attr($json_encoded); ?>">
 <?php
         return ob_get_clean();
     }
