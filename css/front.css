@@ -1,4 +1,4 @@
-#ai-crosshair {
+#edel-ai-crosshair {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -12,12 +12,12 @@
     border: 1px solid #000;
     transition: all 0.2s;
 }
-#ai-crosshair.hover {
+#edel-ai-crosshair.hover {
     background: #ff3333;
     transform: translate(-50%, -50%) scale(1.5);
 }
 
-#ai-modal-overlay {
+#edel-ai-modal-overlay {
     display: none;
     position: absolute;
     top: 0;
@@ -29,7 +29,7 @@
     justify-content: center;
     align-items: center;
 }
-#ai-modal-content {
+#edel-ai-modal-content {
     background: #fff;
     width: 90%;
     max-width: 500px;
@@ -43,7 +43,7 @@
     font-family: sans-serif;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
-#ai-modal-close {
+#edel-ai-modal-close {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -51,27 +51,27 @@
     cursor: pointer;
     color: #888;
 }
-#ai-modal-close:hover {
+#edel-ai-modal-close:hover {
     color: #000;
 }
-#ai-modal-image {
+#edel-ai-modal-image {
     width: 100%;
     height: auto;
     border-radius: 4px;
     margin-bottom: 15px;
 }
-#ai-modal-title {
+#edel-ai-modal-title {
     margin: 0 0 10px;
     font-size: 20px;
     font-weight: bold;
 }
-#ai-modal-desc {
+#edel-ai-modal-desc {
     font-size: 14px;
     line-height: 1.6;
     margin-bottom: 20px;
     white-space: pre-wrap;
 }
-#ai-modal-link {
+#edel-ai-modal-link {
     display: inline-block;
     padding: 10px 20px;
     background: #0073aa;
@@ -81,6 +81,6 @@
     font-weight: bold;
     transition: background 0.3s;
 }
-#ai-modal-link:hover {
+#edel-ai-modal-link:hover {
     background: #005177;
 }

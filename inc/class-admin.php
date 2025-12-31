@@ -18,11 +18,38 @@ class EdelMuseumGeneratorAdmin {
         add_filter('manage_edel_exhibition_posts_columns', array($this, 'add_shortcode_column_head'));
         add_action('manage_edel_exhibition_posts_custom_column', array($this, 'add_shortcode_column_content'), 10, 2);
         add_action('edit_form_after_title', array($this, 'render_shortcode_after_title'));
-        add_action('admin_footer', array($this, 'print_admin_scripts'));
+        // Inline scripts removed (moved to js/admin.js)
     }
 
-    public function enqueue_admin_scripts() {
-        wp_enqueue_media();
+    public function enqueue_admin_scripts($hook) {
+        global $post_type;
+        if ('edel_exhibition' === $post_type) {
+            wp_enqueue_media();
+
+            // Enqueue Admin CSS
+            wp_enqueue_style(
+                'edel-museum-admin-css',
+                EDEL_MUSEUM_GENERATOR_URL . '/css/admin.css',
+                array(),
+                EDEL_MUSEUM_GENERATOR_VERSION
+            );
+
+            // Enqueue Admin JS
+            wp_enqueue_script(
+                'edel-museum-admin-js',
+                EDEL_MUSEUM_GENERATOR_URL . '/js/admin.js',
+                array('jquery'),
+                EDEL_MUSEUM_GENERATOR_VERSION,
+                true
+            );
+
+            // Localize script for translations
+            wp_localize_script('edel-museum-admin-js', 'edel_admin_vars', array(
+                'copied_msg' => __('Copied!', 'edel-museum-generator'),
+                'select_texture_title' => __('Select Texture Image', 'edel-museum-generator'),
+                'use_image_btn' => __('Use this image', 'edel-museum-generator'),
+            ));
+        }
     }
 
     public function add_help_menu() {
@@ -146,51 +173,10 @@ class EdelMuseumGeneratorAdmin {
             </button>
             <span id="edel-copy-msg" style="color:green; display:none; font-weight:bold; font-size:12px;"><?php esc_html_e('Copied!', 'edel-museum-generator'); ?></span>
         </div>
-        <?php
+    <?php
     }
 
-    public function print_admin_scripts() {
-        $screen = get_current_screen();
-        if ($screen && $screen->post_type === 'edel_exhibition') {
-        ?>
-            <script>
-                jQuery(document).ready(function($) {
-                    $('.edel-copy-btn').on('click', function(e) {
-                        e.preventDefault();
-                        var code = $(this).data('code');
-                        var $btn = $(this);
-                        if (navigator.clipboard) {
-                            navigator.clipboard.writeText(code).then(function() {
-                                showCopied($btn);
-                            }, function(err) {
-                                alert('Press Ctrl+C to copy');
-                            });
-                        } else {
-                            var $temp = $("<input>");
-                            $("body").append($temp);
-                            $temp.val(code).select();
-                            document.execCommand("copy");
-                            $temp.remove();
-                            showCopied($btn);
-                        }
-                    });
-
-                    function showCopied($btn) {
-                        if ($btn.next('#edel-copy-msg').length) {
-                            $btn.next('#edel-copy-msg').fadeIn().delay(1000).fadeOut();
-                        } else {
-                            var originalText = $btn.html();
-                            $btn.text('<?php echo esc_js(__('Copied!', 'edel-museum-generator')); ?>');
-                            setTimeout(function() {
-                                $btn.html(originalText);
-                            }, 1500);
-                        }
-                    }
-                });
-            </script>
-        <?php
-        }
-    }
+    // print_admin_scripts was removed as functionality moved to js/admin.js
 
     public function register_cpt() {
         register_post_type('edel_artwork', array(
@@ -245,151 +231,7 @@ class EdelMuseumGeneratorAdmin {
         wp_nonce_field('edel_museum_meta_save', 'edel_museum_meta_nonce');
 
         $artworks = get_posts(array('post_type' => 'edel_artwork', 'posts_per_page' => -1, 'post_status' => 'publish'));
-        ?>
-        <style>
-            .edel-meta-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .edel-meta-table th {
-                text-align: left;
-                width: 200px;
-                padding: 10px 0;
-                border-bottom: 1px solid #eee;
-            }
-
-            .edel-meta-table td {
-                padding: 10px 0;
-                border-bottom: 1px solid #eee;
-            }
-
-            .edel-meta-table input[type="text"],
-            .edel-meta-table input[type="number"] {
-                width: 100%;
-            }
-
-            .edel-section-title {
-                background: #f0f0f1;
-                padding: 10px;
-                margin: 20px 0 10px;
-                font-weight: bold;
-            }
-
-            #edel-art-picker-modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                z-index: 9999;
-            }
-
-            #edel-picker-content {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: #fff;
-                width: 90%;
-                max-width: 800px;
-                height: 80%;
-                border-radius: 5px;
-                display: flex;
-                flexDirection: column;
-                overflow: hidden;
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            }
-
-            #edel-picker-header {
-                padding: 15px;
-                border-bottom: 1px solid #eee;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background: #f9f9f9;
-            }
-
-            #edel-picker-body {
-                padding: 15px;
-                overflow-y: auto;
-                flex: 1;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                align-content: flex-start;
-            }
-
-            .edel-art-item {
-                width: 120px;
-                border: 2px solid #ddd;
-                padding: 5px;
-                border-radius: 4px;
-                cursor: pointer;
-                text-align: center;
-                transition: 0.2s;
-                background: #fff;
-                position: relative;
-            }
-
-            .edel-art-item:hover {
-                border-color: #2271b1;
-            }
-
-            .edel-art-item.selected {
-                border-color: #2271b1;
-                background: #e5f5fa;
-            }
-
-            .edel-art-item.disabled {
-                opacity: 0.6;
-                pointer-events: none;
-                background: #f0f0f1;
-                border-color: #ccc;
-            }
-
-            .edel-art-item.disabled::after {
-                content: 'Placed';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(0, 0, 0, 0.7);
-                color: #fff;
-                padding: 2px 6px;
-                font-size: 10px;
-                border-radius: 3px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .edel-art-item.hidden {
-                display: none;
-            }
-
-            .edel-art-thumb {
-                width: 100%;
-                height: 80px;
-                object-fit: cover;
-                background: #eee;
-            }
-
-            .edel-art-title {
-                font-size: 11px;
-                margin-top: 5px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .edel-open-picker,
-            .edel-upload-texture {
-                margin-left: 5px !important;
-            }
-        </style>
-
+    ?>
         <div class="edel-section-title"><?php esc_html_e('Lighting & Movement', 'edel-museum-generator'); ?></div>
         <table class="edel-meta-table">
             <tr>
@@ -475,106 +317,10 @@ class EdelMuseumGeneratorAdmin {
             </div>
         </div>
 
-        <script>
-            jQuery(document).ready(function($) {
-                var textureFrame;
-                $('.edel-upload-texture').on('click', function(e) {
-                    e.preventDefault();
-                    var targetId = $(this).data('target');
-                    if (textureFrame) {
-                        textureFrame.targetId = targetId;
-                        textureFrame.open();
-                        return;
-                    }
-
-                    textureFrame = wp.media({
-                        title: '<?php echo esc_js(__('Select Texture Image', 'edel-museum-generator')); ?>',
-                        button: {
-                            text: '<?php echo esc_js(__('Use this image', 'edel-museum-generator')); ?>'
-                        },
-                        multiple: false,
-                        library: {
-                            type: 'image'
-                        }
-                    });
-                    textureFrame.targetId = targetId;
-                    textureFrame.on('select', function() {
-                        var attachment = textureFrame.state().get('selection').first().toJSON();
-                        $('#' + textureFrame.targetId).val(attachment.url);
-                    });
-                    textureFrame.open();
-                });
-
-                var targetInputId = null;
-                var $modal = $('#edel-art-picker-modal');
-
-                $('.edel-open-picker').on('click', function() {
-                    targetInputId = $(this).data('target');
-                    var $targetInput = $('#' + targetInputId);
-                    var val = $targetInput.val();
-
-                    var currentIds = val ? val.split(',').map(function(s) {
-                        return s.trim();
-                    }) : [];
-
-                    var usedIds = [];
-                    $('.edel-placement-input').each(function() {
-                        if ($(this).attr('id') !== targetInputId) {
-                            var v = $(this).val();
-                            if (v) {
-                                var parts = v.split(',');
-                                parts.forEach(function(s) {
-                                    if (s.trim()) usedIds.push(s.trim());
-                                });
-                            }
-                        }
-                    });
-
-                    $('.edel-art-item').each(function() {
-                        var $item = $(this);
-                        var id = String($item.data('id'));
-                        var hasImg = $item.data('has-img') == 1;
-
-                        $item.removeClass('selected disabled hidden');
-
-                        if (!hasImg) {
-                            $item.addClass('hidden');
-                            return;
-                        }
-
-                        if (currentIds.indexOf(id) !== -1) {
-                            $item.addClass('selected');
-                        } else if (usedIds.indexOf(id) !== -1) {
-                            $item.addClass('disabled');
-                        }
-                    });
-
-                    $modal.show();
-                });
-
-                $('#edel-picker-close').on('click', function() {
-                    $modal.hide();
-                });
-                $modal.on('click', function(e) {
-                    if (e.target === this) $modal.hide();
-                });
-
-                $('.edel-art-item').on('click', function() {
-                    if ($(this).hasClass('disabled') || $(this).hasClass('hidden')) return;
-                    $(this).toggleClass('selected');
-                    var ids = [];
-                    $('.edel-art-item.selected:not(.hidden)').each(function() {
-                        ids.push($(this).data('id'));
-                    });
-                    $('#' + targetInputId).val(ids.join(', '));
-                });
-            });
-        </script>
 <?php
     }
 
     public function save_meta_fields($post_id) {
-        // ★修正: MissingUnslash対策。Nonceに対しても wp_unslash を挟んでから sanitize_key する
         $nonce = isset($_POST['edel_museum_meta_nonce']) ? sanitize_key(wp_unslash($_POST['edel_museum_meta_nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'edel_museum_meta_save')) return;
 
@@ -583,7 +329,6 @@ class EdelMuseumGeneratorAdmin {
 
         if (isset($_POST['edel_room'])) {
             $clean_data = array();
-            // ★修正: 配列全体を wp_unslash でスラッシュ除去
             $edel_room_raw = wp_unslash($_POST['edel_room']);
 
             if (is_array($edel_room_raw)) {
@@ -711,8 +456,6 @@ class EdelMuseumGeneratorAdmin {
         check_ajax_referer(EDEL_MUSEUM_GENERATOR_SLUG, '_nonce');
 
         $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
-
-        // ★修正: Unslashしてからデコード。警告が出てもこの手順が正しい処理です。
         $layout_raw = isset($_POST['layout']) ? wp_unslash($_POST['layout']) : '';
 
         if (!$post_id || !$layout_raw) wp_send_json_error(array('message' => __('Missing data', 'edel-museum-generator')));
@@ -720,7 +463,6 @@ class EdelMuseumGeneratorAdmin {
         $layout_json = json_decode($layout_raw, true);
         if ($layout_json && is_array($layout_json)) {
             $layout_clean = $this->sanitize_layout_recursive($layout_json);
-            // データを安全なJSONとして再エンコード
             $layout = wp_json_encode($layout_clean, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             update_post_meta($post_id, '_edel_museum_layout', wp_slash($layout));
             wp_send_json_success(array('message' => __('Saved successfully!', 'edel-museum-generator')));
@@ -729,7 +471,6 @@ class EdelMuseumGeneratorAdmin {
         }
     }
 
-    // レイアウトデータの再帰的サニタイズ関数
     private function sanitize_layout_recursive($data) {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
@@ -739,11 +480,11 @@ class EdelMuseumGeneratorAdmin {
         } elseif (is_string($data)) {
             return sanitize_text_field($data);
         } elseif (is_numeric($data)) {
-            return $data; // 数値はそのまま保持
+            return $data;
         } elseif (is_bool($data)) {
             return $data;
         }
-        return ''; // その他は空文字
+        return '';
     }
 
     public function ajax_clear_layout() {

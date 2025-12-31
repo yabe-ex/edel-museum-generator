@@ -1,5 +1,6 @@
 jQuery(document).ready(function ($) {
-    var container = document.querySelector('.ai-museum-container');
+    // 修正: クラス名変更 (.edel-ai-museum-container)
+    var container = document.querySelector('.edel-ai-museum-container');
     if (!container) return;
 
     var $container = $(container);
@@ -27,11 +28,13 @@ jQuery(document).ready(function ($) {
     }
 
     var postId = $container.data('post-id');
-    var canvas = $container.find('.ai-museum-canvas')[0];
+    // 修正: クラス名変更 (.edel-ai-museum-canvas)
+    var canvas = $container.find('.edel-ai-museum-canvas')[0];
 
     // --- Loading ---
+    // 修正: ID名変更 (edel-ai-loading-screen)
     var $loadingScreen = $('<div>')
-        .attr('id', 'ai-loading-screen')
+        .attr('id', 'edel-ai-loading-screen')
         .css({
             position: 'absolute',
             top: 0,
@@ -92,7 +95,7 @@ jQuery(document).ready(function ($) {
         }
     }, 5000);
 
-    // --- UI Layout & Styling (Theme Conflict Fixes) ---
+    // --- UI Layout & Styling ---
     var baseBtnStyle = {
         display: 'inline-flex',
         alignItems: 'center',
@@ -129,7 +132,6 @@ jQuery(document).ready(function ($) {
         borderColor: '#d63638'
     };
 
-    // ★追加: 「閲覧モードに戻る」ボタンのスタイル修正
     var $switchBtn = $container.find('a.button');
     if ($switchBtn.length) {
         $switchBtn.css(
@@ -157,7 +159,6 @@ jQuery(document).ready(function ($) {
     var $scaleValue = $container.find('#scale-value');
     var $scaleWrapper = $container.find('#museum-scale-wrapper');
 
-    // コントロールバーのスタイル
     var $controlsContainer = $saveBtn.parent();
     $controlsContainer.css({
         display: 'flex',
@@ -170,7 +171,6 @@ jQuery(document).ready(function ($) {
         borderTop: '1px solid #ddd'
     });
 
-    // ボタンにスタイル適用
     $saveBtn.css($.extend({}, baseBtnStyle, activeBtnStyle));
     $clearBtn.css($.extend({}, baseBtnStyle, dangerBtnStyle));
 
@@ -185,7 +185,6 @@ jQuery(document).ready(function ($) {
         borderRadius: '4px',
         marginLeft: '10px'
     });
-    // var $rotateLabel = $('<label>').css({ fontSize: '13px', color: '#fff' }).text('RotateA:');
     var $rotateLabel = $('<label>').css({ fontSize: '13px', color: '#fff', whiteSpace: 'nowrap' }).text(edel_vars.txt_rotate_label);
     var $rotateSlider = $('<input>').attr({ type: 'range', id: 'rotate-slider', min: '-180', max: '180', step: '15', value: '0' });
     var $rotateValue = $('<span>').attr('id', 'rotate-value').css({ fontSize: '12px', minWidth: '35px', color: '#fff' }).text('0°');

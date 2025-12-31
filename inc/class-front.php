@@ -4,21 +4,22 @@ class EdelMuseumGeneratorFront {
 
     public function init() {
         add_shortcode('edel_museum', array($this, 'render_museum_shortcode'));
-        add_shortcode('ai_museum', array($this, 'render_museum_shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'front_enqueue'));
     }
 
     public function front_enqueue() {
-        // ★修正: $_GETを直接触らず filter_input を使用（Nonce警告対策・コード品質向上）
-        // 表示切り替えのみの機能であり、セキュリティリスクはないためNonce検証は省略します。
         $edit_mode_val = filter_input(INPUT_GET, 'museum_edit', FILTER_VALIDATE_BOOLEAN);
         $is_edit_mode = ($edit_mode_val === true || $edit_mode_val === 1);
 
-        $version = (defined('EDEL_MUSEUM_GENERATOR_DEVELOP') && true === EDEL_MUSEUM_GENERATOR_DEVELOP) ? time() : EDEL_MUSEUM_GENERATOR_VERSION;
+        $plugin_ver = (defined('EDEL_MUSEUM_GENERATOR_DEVELOP') && true === EDEL_MUSEUM_GENERATOR_DEVELOP) ? time() : EDEL_MUSEUM_GENERATOR_VERSION;
 
-        wp_enqueue_script('three', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/three.min.js', array(), '0.128.0', true);
-        wp_enqueue_script('three-gltf-loader', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/GLTFLoader.js', array('three'), '0.128.0', true);
-        wp_enqueue_script('nipplejs', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/nipplejs.min.js', array(), '0.10.1', true);
+        // 修正: r147 固定
+        $three_ver = '0.147.0';
+
+        // 修正: プレフィックス付きハンドル名
+        wp_enqueue_script('edel-museum-three', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/three.min.js', array(), $three_ver, true);
+        wp_enqueue_script('edel-museum-gltf-loader', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/GLTFLoader.js', array('edel-museum-three'), $three_ver, true);
+        wp_enqueue_script('edel-museum-nipplejs', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/nipplejs.min.js', array(), '0.10.1', true);
 
         // JS用翻訳テキスト
         $localize_data = array(
@@ -31,18 +32,15 @@ class EdelMuseumGeneratorFront {
             'txt_reset' => __('Reset', 'edel-museum-generator'),
             'txt_confirm_reset' => __('Are you sure you want to reset layout?', 'edel-museum-generator'),
             'txt_rotate_label' => __('Rotate:', 'edel-museum-generator'),
-            // Editor Labels
             'txt_move_t'   => __('Move (T)', 'edel-museum-generator'),
             'txt_rotate_r' => __('Rotate (R)', 'edel-museum-generator'),
             'txt_loading_assets' => __('Loading Assets...', 'edel-museum-generator'),
-            // Viewer Controls
             'txt_controls_title' => __('Controls', 'edel-museum-generator'),
             'txt_move'   => __('Move:', 'edel-museum-generator'),
             'txt_height' => __('Height:', 'edel-museum-generator'),
             'txt_look'   => __('Look:', 'edel-museum-generator'),
             'txt_cursor' => __('Cursor:', 'edel-museum-generator'),
             'txt_esc_desc' => __('ESC (Back / Unlock)', 'edel-museum-generator'),
-            // Viewer Settings
             'txt_room'      => __('Room', 'edel-museum-generator'),
             'txt_spotlight' => __('Spotlight', 'edel-museum-generator'),
             'txt_view_details' => __('View Details', 'edel-museum-generator'),
@@ -50,19 +48,19 @@ class EdelMuseumGeneratorFront {
         );
 
         if ($is_edit_mode) {
-            wp_enqueue_script('three-orbitcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/OrbitControls.js', array('three'), '0.128.0', true);
-            wp_enqueue_script('three-transformcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/TransformControls.js', array('three'), '0.128.0', true);
+            wp_enqueue_script('edel-museum-orbitcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/OrbitControls.js', array('edel-museum-three'), $three_ver, true);
+            wp_enqueue_script('edel-museum-transformcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/TransformControls.js', array('edel-museum-three'), $three_ver, true);
 
-            wp_enqueue_script(EDEL_MUSEUM_GENERATOR_SLUG . '-editor', EDEL_MUSEUM_GENERATOR_URL . '/js/edel-editor.js', array('jquery', 'three', 'three-orbitcontrols', 'three-transformcontrols', 'three-gltf-loader'), $version, true);
+            wp_enqueue_script(EDEL_MUSEUM_GENERATOR_SLUG . '-editor', EDEL_MUSEUM_GENERATOR_URL . '/js/edel-editor.js', array('jquery', 'edel-museum-three', 'edel-museum-orbitcontrols', 'edel-museum-transformcontrols', 'edel-museum-gltf-loader'), $plugin_ver, true);
             wp_localize_script(EDEL_MUSEUM_GENERATOR_SLUG . '-editor', 'edel_vars', $localize_data);
         } else {
-            wp_enqueue_script('three-pointerlockcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/PointerLockControls.js', array('three'), '0.128.0', true);
+            wp_enqueue_script('edel-museum-pointerlockcontrols', EDEL_MUSEUM_GENERATOR_URL . '/js/lib/PointerLockControls.js', array('edel-museum-three'), $three_ver, true);
 
-            wp_enqueue_script(EDEL_MUSEUM_GENERATOR_SLUG . '-viewer', EDEL_MUSEUM_GENERATOR_URL . '/js/edel-viewer.js', array('jquery', 'three', 'three-pointerlockcontrols', 'three-gltf-loader', 'nipplejs'), $version, true);
+            wp_enqueue_script(EDEL_MUSEUM_GENERATOR_SLUG . '-viewer', EDEL_MUSEUM_GENERATOR_URL . '/js/edel-viewer.js', array('jquery', 'edel-museum-three', 'edel-museum-pointerlockcontrols', 'edel-museum-gltf-loader', 'edel-museum-nipplejs'), $plugin_ver, true);
             wp_localize_script(EDEL_MUSEUM_GENERATOR_SLUG . '-viewer', 'edel_vars', $localize_data);
         }
 
-        wp_enqueue_style(EDEL_MUSEUM_GENERATOR_SLUG . '-front', EDEL_MUSEUM_GENERATOR_URL . '/css/front.css', array(), $version);
+        wp_enqueue_style(EDEL_MUSEUM_GENERATOR_SLUG . '-front', EDEL_MUSEUM_GENERATOR_URL . '/css/front.css', array(), $plugin_ver);
     }
 
     private function build_layout_from_exhibition($exhibition_id) {
@@ -202,7 +200,6 @@ class EdelMuseumGeneratorFront {
 
         $json_encoded = rawurlencode(wp_json_encode($layout, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
-        // ★修正: ここも filter_input を使用
         $edit_mode_val = filter_input(INPUT_GET, 'museum_edit', FILTER_VALIDATE_BOOLEAN);
         $is_edit_mode = ($edit_mode_val === true || $edit_mode_val === 1);
 
@@ -215,7 +212,7 @@ class EdelMuseumGeneratorFront {
 
         ob_start();
 ?>
-        <div class="ai-museum-container"
+        <div class="edel-ai-museum-container"
             data-json-id="<?php echo esc_attr($data_id); ?>"
             data-post-id="<?php echo esc_attr($exhibition_id); ?>"
             style="width:100%;max-width:900px;margin:0 auto; position:relative; overflow:hidden;">
@@ -228,20 +225,20 @@ class EdelMuseumGeneratorFront {
                 </div>
             <?php endif; ?>
 
-            <div id="ai-crosshair"></div>
+            <div id="edel-ai-crosshair"></div>
 
-            <div id="ai-modal-overlay">
-                <div id="ai-modal-content">
-                    <span id="ai-modal-close">&times;</span>
-                    <img id="ai-modal-image" src="" alt="">
-                    <h3 id="ai-modal-title"></h3>
-                    <div id="ai-modal-desc"></div>
+            <div id="edel-ai-modal-overlay">
+                <div id="edel-ai-modal-content">
+                    <span id="edel-ai-modal-close">&times;</span>
+                    <img id="edel-ai-modal-image" src="" alt="">
+                    <h3 id="edel-ai-modal-title"></h3>
+                    <div id="edel-ai-modal-desc"></div>
                 </div>
             </div>
 
-            <div id="ai-joystick-zone" style="position:absolute; bottom:20px; left:20px; width:120px; height:120px; z-index:900; display:none;"></div>
+            <div id="edel-ai-joystick-zone" style="position:absolute; bottom:20px; left:20px; width:120px; height:120px; z-index:900; display:none;"></div>
 
-            <canvas class="ai-museum-canvas" style="display:block; width:100%; background:#000;"></canvas>
+            <canvas class="edel-ai-museum-canvas" style="display:block; width:100%; background:#000;"></canvas>
 
             <?php if ($is_edit_mode) : ?>
                 <div style="background: #333; color: #fff; padding: 10px; display:flex; gap:15px; align-items:center; justify-content:space-between; flex-wrap:wrap;">

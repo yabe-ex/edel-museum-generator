@@ -1,5 +1,6 @@
 jQuery(document).ready(function ($) {
-    $('.ai-museum-container').each(function () {
+    // 修正: クラス名を変更 (.edel-ai-museum-container)
+    $('.edel-ai-museum-container').each(function () {
         initMuseum(this);
     });
 
@@ -21,11 +22,13 @@ jQuery(document).ready(function ($) {
         if (!layout) layout = $container.data('layout');
         if (!layout || !layout.room) return;
 
-        var canvas = $container.find('.ai-museum-canvas')[0];
+        // 修正: クラス名を変更 (.edel-ai-museum-canvas)
+        var canvas = $container.find('.edel-ai-museum-canvas')[0];
 
         // --- Loading ---
+        // 修正: ID名を変更 (edel-ai-loading-screen)
         var $loadingScreen = $('<div>')
-            .attr('id', 'ai-loading-screen')
+            .attr('id', 'edel-ai-loading-screen')
             .css({
                 position: 'absolute',
                 top: 0,
@@ -85,7 +88,6 @@ jQuery(document).ready(function ($) {
             if ($loadingScreen.is(':visible')) $loadingScreen.fadeOut(500);
         }, 5000);
 
-        // === ★重要: 強制スタイル適用関数 (!important 付き) ===
         function setImportantStyles(element, styles) {
             if (!element) return;
             var domEl = element.jquery ? element[0] : element;
@@ -96,7 +98,6 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        // ベースとなるボタンスタイル定義
         var baseBtnStyle = {
             display: 'inline-flex',
             'align-items': 'center',
@@ -124,26 +125,19 @@ jQuery(document).ready(function ($) {
             'z-index': '1001'
         };
 
-        // --- ★修正: テキスト内容でボタンを探す ---
-        // クラス名が消えている可能性を考慮し、「編集」や「Edit」という文字を含むリンクを探す
         var $switchBtn = $container.find('a').filter(function () {
             var text = $(this).text().trim();
-            // 日本語の「編集」または英語の「Edit」が含まれているか、もしくは .button クラスを持っているか
             return text.indexOf('編集') !== -1 || text.indexOf('Edit') !== -1 || $(this).hasClass('button');
         });
 
         if ($switchBtn.length) {
             $switchBtn.each(function () {
-                // スタイルを強制適用
                 setImportantStyles(this, baseBtnStyle);
-
-                // Lite版Viewer: 背景白っぽく、文字青
                 setImportantStyles(this, {
                     'background-color': '#f6f7f7',
                     color: '#2271b1'
                 });
 
-                // ホバーイベント
                 $(this)
                     .on('mouseenter', function () {
                         this.style.setProperty('background-color', '#f0f0f1', 'important');
@@ -156,15 +150,15 @@ jQuery(document).ready(function ($) {
             });
         }
 
-        // UI Elements
-        var $crosshair = $container.find('#ai-crosshair');
-        var $modalOverlay = $container.find('#ai-modal-overlay');
-        var $modalClose = $container.find('#ai-modal-close');
-        var $modalImage = $container.find('#ai-modal-image');
-        var $modalTitle = $container.find('#ai-modal-title');
-        var $modalDesc = $container.find('#ai-modal-desc');
-        var $modalLink = $container.find('#ai-modal-link');
-        var $joystickZone = $container.find('#ai-joystick-zone');
+        // 修正: ID名変更 (edel-ai-...)
+        var $crosshair = $container.find('#edel-ai-crosshair');
+        var $modalOverlay = $container.find('#edel-ai-modal-overlay');
+        var $modalClose = $container.find('#edel-ai-modal-close');
+        var $modalImage = $container.find('#edel-ai-modal-image');
+        var $modalTitle = $container.find('#edel-ai-modal-title');
+        var $modalDesc = $container.find('#edel-ai-modal-desc');
+        var $modalLink = $container.find('#edel-ai-modal-link');
+        var $joystickZone = $container.find('#edel-ai-joystick-zone');
 
         var width = $container.width();
         var height = 500;
@@ -469,7 +463,8 @@ jQuery(document).ready(function ($) {
             canvas.addEventListener(
                 'touchstart',
                 function (e) {
-                    if (e.touches.length === 1 && !$(e.target).closest('#ai-joystick-zone').length) {
+                    // 修正: ID名変更
+                    if (e.touches.length === 1 && !$(e.target).closest('#edel-ai-joystick-zone').length) {
                         touchStartX = e.touches[0].pageX;
                         touchStartY = e.touches[0].pageY;
                     }
@@ -479,7 +474,8 @@ jQuery(document).ready(function ($) {
             canvas.addEventListener(
                 'touchmove',
                 function (e) {
-                    if (e.touches.length === 1 && !$(e.target).closest('#ai-joystick-zone').length) {
+                    // 修正: ID名変更
+                    if (e.touches.length === 1 && !$(e.target).closest('#edel-ai-joystick-zone').length) {
                         const deltaX = e.touches[0].pageX - touchStartX;
                         const deltaY = e.touches[0].pageY - touchStartY;
                         camera.rotation.y -= deltaX * lookSpeed;

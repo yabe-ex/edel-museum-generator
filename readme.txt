@@ -3,7 +3,7 @@ Contributors: edelhearts
 Tags: 3d, gallery, museum, three.js, portfolio
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,7 @@ Create immersive 3D virtual museums and galleries from your WordPress posts.
 **Edel Museum Generator** allows you to easily create high-quality 3D virtual museums and galleries on your WordPress site.
 
 Powered by Three.js, it provides a smooth, immersive "First Person Shooter" (FPS) style walkthrough experience directly in the browser.
+
 This plugin is perfect for artists, photographers, and creators who want to showcase their portfolio in a unique and engaging way.
 
 ### ✨ Features
@@ -56,15 +57,23 @@ Unlock the full potential of your virtual museum with **Edel Museum Generator Pr
 == Frequently Asked Questions ==
 
 = Can I use my own textures? =
-Yes! You can specify image URLs for the floor, walls, and ceiling in the Exhibition Settings.
+Yes!
+You can specify image URLs for the floor, walls, and ceiling in the Exhibition Settings.
 
 = Does it work on mobile? =
 Yes, the viewer is responsive and includes touch controls (joystick), although a larger screen is recommended for the best immersive experience.
 
 = Can I sell my art through this plugin? =
-The Lite version allows you to display art. To add "Buy Now" links directly to the artworks, you will need the [Pro Version](https://edel-hearts.com/edel-museum-generator-pro/).
+The Lite version allows you to display art.
+To add "Buy Now" links directly to the artworks, you will need the [Pro Version](https://edel-hearts.com/edel-museum-generator-pro/).
 
 == Changelog ==
+
+= 1.3.0 =
+* Fix: Code improvements for WordPress Plugin Directory compliance.
+* Fix: Fixed function and HTML ID prefixes to avoid conflicts.
+* Fix: Moved inline scripts and styles to external files.
+* Update: Updated Three.js library to r147.
 
 = 1.2.0 =
 * Bug fixed.
